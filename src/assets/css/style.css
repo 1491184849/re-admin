@@ -8,3 +8,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.el-header {
+  width: calc(100% - 200px);
+  height: 59px !important;
+  border-bottom: 1px solid #e5e7eb;
+  position: fixed;
+  padding: 0 !important;
+}
+
+.el-main {
+  margin-top: 60px;
+  height: calc(100vh - 60px);
+  background-color: #fafafa;
+}

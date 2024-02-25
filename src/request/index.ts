@@ -23,10 +23,16 @@ service.interceptors.response.use(
   function (response: AxiosResponse<any, any>) {
     // 响应正确格式：{code:0,message:''}；格式错误或code非0都调用Promise.reject()
     if (response.status === 200) {
-      if (response.data?.code === 0) return response.data;
-      else {
-        if (response.data?.message) ElMessage.error(response.data.message);
-        else ElMessage.error("响应失败，状态码：" + response.status);
+      // 存在code属性表示格式正确
+      const code = response.data["code"];
+      if (code !== undefined || code !== null) {
+        if (code === 0) return response.data;
+        else {
+          if (response.data.message) ElMessage.error(response.data.message);
+          else ElMessage.error("响应失败，状态码：" + response.status);
+        }
+      } else {
+        ElMessage.error("响应数据格式错误");
       }
     }
     return Promise.reject(response);

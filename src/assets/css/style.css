@@ -1,0 +1,10 @@
+/** 清除浏览器默认间距 */
+* {
+  padding: 0;
+  margin: 0;
+}
+
+/** 引入tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

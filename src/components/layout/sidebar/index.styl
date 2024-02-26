@@ -3,16 +3,21 @@
     top: 0;
     left: 0;
     bottom: 0;
-    height: 100vh;
     background-color: #17253b;
+    z-index: 999; //增大显示层级，解决侧边栏收缩时header底部边框多余显示
 
     // 覆盖：去除边框
     .el-menu {
         border: none;
     }
 
-    .custom-el-emnu {
+    .custom-el-emnu:not(.el-menu--collapse) {
         width: 200px;
+
+        svg {
+            width: 14px !important;
+            height: 14px !important;
+        }
     }
 
     .el-menu-item.is-active {

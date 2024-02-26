@@ -1,12 +1,16 @@
 <template>
     <div class="navbar-wrapper flex items-center">
-        <!-- todo: 切换按钮 -->
+        <!-- 侧边菜单收缩切换按钮 -->
+        <div class="btn-toggle-wrapper h-full" @click="toggleSidebar">
+            <span class="btn-toggle">
+                <re-icon v-if="collapse" name="ant-design:menu-unfold-outlined" />
+                <re-icon v-else name="ant-design:menu-fold-outlined" />
+            </span>
+        </div>
         <ul class="w-full list-none flex flex-row-reverse items-center">
             <!-- UI设置 -->
             <li @click="openUISettings">
-                <el-icon>
-                    <Setting />
-                </el-icon>
+                <re-icon name="Setting" />
             </li>
             <!-- 用户头像，昵称 -->
             <li style="padding: 0;">
@@ -24,9 +28,7 @@
             </li>
             <!-- 待办事项 -->
             <li>
-                <el-icon>
-                    <Bell />
-                </el-icon>
+                <re-icon name="Bell" />
             </li>
             <!-- 全屏 -->
             <li @click="toggleFullScreen">
@@ -36,9 +38,7 @@
             </li>
             <!-- 搜索 -->
             <li>
-                <el-icon>
-                    <Search />
-                </el-icon>
+                <re-icon name="Search" />
             </li>
         </ul>
         <ui-settings v-model="drawerVisible" />
@@ -49,9 +49,13 @@
 import "./index.styl"
 import userAvatar from "@/assets/img/user.jpeg"
 import UiSettings from "@/components/layout/ui-settings/index.vue"
-import { ref } from "vue";
+import ReIcon from '@/components/re-icon/index.vue'
+import { onMounted, ref, watch } from "vue";
 
 const drawerVisible = ref<boolean>(false)
+const collapse = ref<boolean>(false);
+const emits = defineEmits(['changeSidebarStatus'])
+const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 // 切换全屏
 const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -75,4 +79,27 @@ const handleCommand = (cmd: string) => {
 const openUISettings = () => {
     drawerVisible.value = true
 }
+// 切换侧边栏
+const toggleSidebar = () => {
+    collapse.value = !collapse.value;
+    emits("changeSidebarStatus", collapse.value)
+}
+
+onMounted(() => {
+    // 内置函数监听窗口变化
+    window.onresize = () => {
+        return (() => {
+            screenWidth.value = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+        })()
+    }
+})
+// 监听窗口宽度，小于1024px自动收缩侧边栏
+watch(() => screenWidth.value, (val) => {
+    if (val < 1024) {
+        collapse.value = true
+    } else {
+        collapse.value = false
+    }
+    emits("changeSidebarStatus", collapse.value)
+})
 </script>

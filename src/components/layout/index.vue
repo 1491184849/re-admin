@@ -8,7 +8,10 @@
         <el-header>
           <nav-bar @change-sidebar-status="changeSidebarStatus" />
         </el-header>
-        <el-main><router-view /></el-main>
+        <re-tab />
+        <el-main>
+          <router-view />
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -18,6 +21,7 @@
 import "./index.styl"
 import SideBar from "./sidebar/index.vue";
 import NavBar from "./navbar/index.vue"
+import ReTab from "./re-tab/index.vue"
 import { onMounted, ref } from "vue";
 
 const collapse = ref<boolean>(false);

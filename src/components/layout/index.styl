@@ -1,5 +1,4 @@
- 重写.el-menu--collapse
-.re-el-menu--collapse {
+重写.el-menu--collapse, .re-el-menu--collapse {
     width: calc(var(--el-menu-icon-width) + var(--el-menu-base-level-padding) * 2) !important;
 }
 
@@ -17,11 +16,12 @@
 
 // 收缩后header宽度
 .re-el-header-width {
-    width: calc(100% - (var(--el-menu-icon-width) + var(--el-menu-base-level-padding) * 2));
+    width: calc(100% - (var(--el-menu-icon-width) + var(--el-menu-base-level-padding) * 2)) !important;
 }
 
 .el-main {
-    height: calc(100vh - 60px);
+    margin-top: 100px;
+    height: calc(100vh - 100px);
     background-color: #fafafa;
 }
 

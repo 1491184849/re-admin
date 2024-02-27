@@ -1,5 +1,5 @@
 <template>
-    <el-drawer v-model="value" title="偏好设置" direction="rtl" size="300px" :before-close="handleClose">
+    <el-drawer class="ui-settings-drawer" v-model="value" title="偏好设置" direction="rtl" size="300px" :before-close="handleClose" :append-to-body="true">
         <div>
             <el-divider class="pb-5">主题配色</el-divider>
             <el-radio-group v-model="theme">

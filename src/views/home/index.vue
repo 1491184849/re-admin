@@ -1,6 +1,8 @@
 <template>
     <div>
-        首页
+        <ul>
+            <li v-for="i in 100" :key="i">列表{{ i }}</li>
+        </ul>
     </div>
 </template>
 

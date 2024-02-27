@@ -33,9 +33,11 @@ watch(() => model.value, (val) => {
   if (val) {
     document.querySelector(".el-aside")?.classList?.add("re-el-menu--collapse");
     document.querySelector(".el-header")?.classList?.add("re-el-header-width");
+    document.querySelector(".re-tab-wrapper")?.classList?.add("re-el-header-width");
   } else {
     document.querySelector(".el-aside")?.classList?.remove("re-el-menu--collapse");
     document.querySelector(".el-header")?.classList?.remove("re-el-header-width");
+    document.querySelector(".re-tab-wrapper")?.classList?.remove("re-el-header-width");
   }
 })
 </script>

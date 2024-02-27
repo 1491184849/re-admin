@@ -2,6 +2,7 @@ import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 import Login from "@/views/login/index.vue";
 import Layout from "@/components/layout/index.vue";
 import Home from "@/views/home/index.vue";
+import Person from "@/views/person/index.vue";
 import { MenuItem, getSidebarMenus } from "@/api/menu";
 
 // views下页面
@@ -18,6 +19,7 @@ const routes: RouteRecordRaw[] = [
         path: "/home",
         component: Home,
       },
+      { path: "/person", component: Person },
     ],
   },
 ];

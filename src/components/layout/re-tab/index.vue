@@ -18,7 +18,7 @@
                     @click="rightMoveShowTab"></el-button>
                 <el-divider direction="vertical" />
             </div>
-            <el-button link icon="Refresh"></el-button>
+            <el-button link icon="Refresh" @click="doRefresh"></el-button>
             <el-divider direction="vertical" />
             <el-dropdown @command="handleCommand" trigger="click">
                 <el-button link icon="ArrowDown"></el-button>
@@ -72,6 +72,9 @@ const rightMoveShowTab = () => {
     startTabIndex.value += 1
     endTabIndex.value += 1
     updateShowTabByWidth(computedTabs.value, tabWrapperWidth.value!)
+}
+const doRefresh = () => {
+    window.location.reload()
 }
 /**
  *  一个字12px，关闭图标12px，内填充14px，字和关闭图标间距6px，右间距8px = n*12+40

@@ -1,29 +1,38 @@
 <template>
   <div class="sidebar-wrapper">
+    <div class="system-title">
+      <a class="flex justify-center items-center text-white w-full h-full" href="/">
+        <img :src="VueLogo" class="mr-2" />
+        <span v-if="!model" class="font-bold">Re-Admin</span>
+      </a>
+    </div>
     <el-menu default-active="2" active-text-color="#ffffff" background-color="#17253b" text-color="#7c859f"
       @open="handleOpen" @close="handleClose" class="custom-el-emnu" router :collapse="model">
-      <sidebar-item v-for="(item, index) in menus" :key="index" :item="item" />
+      <sidebar-item v-if="menus" v-for="(item, index) in menus" :key="index" :item="item" />
     </el-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
+import { RouteRecordRaw } from "vue-router";
+import { useRouteCache } from '@/router/hook';
 import './index.styl'
 import SidebarItem from './sidebar-item.vue'
-import { getSidebarMenus, MenuItem } from "@/api/menu"
+import VueLogo from "@/assets/vue.svg"
 
 const model = defineModel()
-const menus = ref<MenuItem[]>([])
+const menus = ref<RouteRecordRaw[] | undefined>([])
+const routesCache = useRouteCache();
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
-
 onMounted(() => {
-  getSidebarMenus().then(res => menus.value = res.data)
+  const rawRoutes = routesCache.getCache();
+  menus.value = rawRoutes?.find(x => x.path === "/")?.children?.filter(x => !x.meta?.hidden);
 })
 // 监听收缩状态
 watch(() => model.value, (val) => {

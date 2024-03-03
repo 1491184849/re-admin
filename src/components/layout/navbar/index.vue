@@ -17,7 +17,7 @@
                 <el-dropdown @command="handleCommand" class="w-full h-full px-2.5 border-none" trigger="click">
                     <div class="flex">
                         <div class="flex items-center"> <img :src="UserAvatar" /></div>
-                        <div class="flex items-center ml-2">Re.Admin</div>
+                        <div class="flex items-center ml-2">admin</div>
                     </div>
                     <template #dropdown>
                         <el-dropdown-menu>

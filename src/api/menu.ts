@@ -2,14 +2,14 @@ import request from "@/request";
 import { ActionLike } from "#/data";
 
 export interface MenuItemMena {
+  title: string;
   icon: string;
-  auth: string;
+  auths: string[];
 }
 
 export interface MenuItem {
   name: string;
   path: string;
-  title: string;
   meta: MenuItemMena;
   children: MenuItem[];
 }

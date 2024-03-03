@@ -4,12 +4,16 @@ import Layout from "@/components/layout/index.vue";
 import Home from "@/views/home/index.vue";
 import Person from "@/views/person/index.vue";
 import { MenuItem, getSidebarMenus } from "@/api/menu";
+import { useRouteCache } from "./hook";
 
 // views下页面
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 // 固定路由
 const routes: RouteRecordRaw[] = [
-  { path: "/login", component: Login },
+  {
+    path: "/login",
+    component: Login,
+  },
   {
     path: "/",
     component: Layout,
@@ -18,8 +22,86 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/home",
         component: Home,
+        meta: {
+          title: "首页",
+          icon: "ic:round-home",
+        },
       },
-      { path: "/person", component: Person },
+      {
+        path: "/table",
+        meta: {
+          title: "智能表格",
+          icon: "material-symbols:table-sharp",
+        },
+        component: () => import("@/views/table/index.vue"),
+      },
+      {
+        path: "/login-pages",
+        meta: {
+          title: "登录页面",
+          icon: "icon-park-outline:hanfu-chinese-style",
+        },
+        children: [
+          {
+            path: "/login-pages/one",
+            meta: {
+              title: "登录-1",
+            },
+            component: () => import("@/views/login-pages/one/index.vue"),
+          },
+          {
+            path: "/login-pages/two",
+            meta: {
+              title: "登录-2",
+            },
+            component: () => import("@/views/login-pages/two/index.vue"),
+          },
+          {
+            path: "/login-pages/three",
+            meta: {
+              title: "登录-3",
+            },
+            component: () => import("@/views/login-pages/three/index.vue"),
+          },
+        ],
+      },
+      {
+        path: "/errors",
+        meta: {
+          title: "错误页面",
+          icon: "material-symbols:error",
+        },
+        children: [
+          {
+            path: "/errors/401",
+            meta: {
+              title: "401(未登录)",
+            },
+            component: () => import("@/views/errors/401.vue"),
+          },
+          {
+            path: "/errors/403",
+            meta: {
+              title: "403(禁止访问)",
+            },
+            component: () => import("@/views/errors/403.vue"),
+          },
+          {
+            path: "/errors/500",
+            meta: {
+              title: "500(服务器错误)",
+            },
+            component: () => import("@/views/errors/403.vue"),
+          },
+        ],
+      },
+      {
+        path: "/person",
+        component: Person,
+        meta: {
+          hidden: true,
+        },
+      },
     ],
   },
 ];
@@ -36,8 +118,9 @@ const genRoutes = (array: MenuItem[]): RouteRecordRaw[] => {
       path: item.path,
       name: item.name,
       meta: {
-        title: item.title,
-        auth: item?.meta?.auth,
+        title: item?.meta?.title,
+        icon: item?.meta?.icon,
+        auths: item?.meta?.auths,
       },
       children: [],
     };
@@ -69,6 +152,7 @@ const mergeRoutes = async (): Promise<RouteRecordRaw[]> => {
   } catch (error) {
     console.error("合并路由错误：", error);
   }
+  useRouteCache().setCache(allRoutes);
   return allRoutes;
 };
 

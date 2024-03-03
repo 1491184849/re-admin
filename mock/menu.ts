@@ -10,38 +10,34 @@ const methods: MockMethod[] = [
         data: [
           {
             path: "/system",
-            title: "系统管理",
             meta: {
+              title: "系统管理",
               icon: "ant-design:setting-filled",
             },
             children: [
               {
                 path: "/system/user",
-                title: "用户管理",
-                meta: {
-                  icon: "ri:user-fill",
-                },
+                meta:{
+                  title: "用户管理",
+                }
               },
               {
                 path: "/system/roles",
-                title: "角色管理",
-                meta: {
-                  icon: "icon-park-solid:people-safe-one",
-                },
+                meta:{
+                  title: "角色管理",
+                }
               },
               {
                 path: "/system/menus",
-                title: "菜单管理",
-                meta: {
-                  icon: "ep:menu",
-                },
+                meta:{
+                  title: "菜单管理",
+                }
               },
               {
                 path: "/system/dict",
-                title: "数据字典",
-                meta: {
-                  icon: "material-symbols:dictionary",
-                },
+                meta:{
+                  title: "数据字典",
+                }
               },
             ],
           },

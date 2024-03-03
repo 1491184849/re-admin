@@ -44,6 +44,7 @@
 
 <script lang="ts" setup>
 import UserAvatar from "@/assets/img/user.jpeg"
+import { UploadProps } from "element-plus/es/components/upload/src/upload";
 import { reactive, ref } from 'vue'
 
 const form = reactive({

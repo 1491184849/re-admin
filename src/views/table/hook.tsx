@@ -14,12 +14,18 @@ export function useTable() {
     const columns = [
         {
             prop: "name",
-            label: "名称",
-            render: (row: any) => <el-button>{row.name}</el-button>,
+            label: "名称"
         },
         {
             prop: "hobby",
             label: "爱好"
+        },
+        {
+            fixed: "right",
+            render: (row: any) => <>
+                <el-button size="small" link type="primary">编辑</el-button>
+                <el-button size="small" link type="danger" onclick={() => remove(row)}>删除</el-button>
+            </>
         }
     ];
     const filters = [
@@ -29,6 +35,9 @@ export function useTable() {
             key: 'name'
         }
     ]
+    const remove = (row: any) => {
+        console.log(row);
+    }
     return {
         data,
         columns,

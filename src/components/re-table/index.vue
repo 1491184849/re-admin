@@ -35,7 +35,7 @@
       <div class="re-table-toolbar mb-4">
         <slot name="toolbar"></slot>
       </div>
-      <el-table :data="props.data" :header-cell-style="props.headerCellStyle" :cell-style="props.cellStyle"
+      <el-table :data="tableData" :header-cell-style="headerCellStyle" :cell-style="props.cellStyle"
                 :border="props.border"
                 :row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
@@ -75,10 +75,11 @@
 <script lang="ts" setup>
 import "./index.styl"
 import {Icon} from "@iconify/vue";
-import {onBeforeMount, reactive, ref} from "vue";
+import {CSSProperties, onBeforeMount, onMounted, reactive, ref} from "vue";
+import {ActionPageLike} from "#/data";
 
 type CustomRenderFunc = (row: any) => any;
-type CustomRequestFunc = (para: any) => Promise<any>;
+type CustomRequestFunc = (para: any) => Promise<ActionPageLike<any>>;
 
 interface ReTableColumn {
   type?: "default" | "selection" | "index" | "expand",
@@ -121,8 +122,10 @@ interface FilterStruct {
   defaultValue?: string
 }
 
+const headerCellStyle: CSSProperties = {background: '#fafafa', color: '#606266'};
 const props = withDefaults(defineProps<{
   columns: ReTableColumn[],
+  //当request函数存在时，data不生效
   data?: Array<any>,
   height?: string | number,
   maxHeight?: string | number,
@@ -140,7 +143,6 @@ const props = withDefaults(defineProps<{
   headerRowClassName?: Function | string,
   headerRowStyle?: Function | object,
   headerCellClassName?: Function | string,
-  headerCellStyle?: Function | object,
   rowKey: Function | string,
   emptyText?: string,
   defaultExpandAll?: boolean,
@@ -163,26 +165,25 @@ const props = withDefaults(defineProps<{
   flexible?: boolean,
   enabledFilter?: boolean,
   filters?: Array<FilterStruct>,
-  formatResponse?: Function,
-  request?: CustomRequestFunc
+  request?: CustomRequestFunc | undefined
 }>(), {
   stripe: false,
   border: false,
   size: "default",
   fit: true,
   showHeader: true,
-  headerCellStyle: {background: '#eef1f6', color: '#606266'},
   enabledFilter: false
 });
 const emits = defineEmits<{
   (e: 'row-click', row: any, col: any, event: Event): void
 }>();
-const isShowFilter = ref<boolean>(props.enabledFilter && props.filters && props.filters.length > 0)
+const isShowFilter = ref<boolean>((props.enabledFilter && props.filters && props.filters.length > 0) ?? false)
 const filterForm = reactive({
   page: 1,
   size: 10
 });
 const total = ref<number>(0);
+const tableData = ref<Array<any>>(props.data ?? []);
 //查询
 const onQuery = () => {
 
@@ -191,7 +192,13 @@ const onQuery = () => {
 const onReset = () => {
 }
 
+//异步请求接口数据
 async function requestData() {
+  if (props.request) {
+    const res = await props.request(filterForm)
+    tableData.value = res.data;
+    total.value = res.total;
+  }
 }
 
 async function handleSizeChange(val: number) {
@@ -211,5 +218,8 @@ onBeforeMount(() => {
       filterForm[item.key] = item?.defaultValue;
     }
   }
+})
+onMounted(async () => {
+  await requestData();
 })
 </script>

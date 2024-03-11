@@ -8,15 +8,11 @@
             </span>
         </div>
         <ul class="w-full list-none flex flex-row-reverse items-center">
-            <!-- UI设置 -->
-            <li @click="openUISettings">
-                <re-icon name="Setting" />
-            </li>
             <!-- 用户头像，昵称 -->
             <li style="padding: 0;">
                 <el-dropdown @command="handleCommand" class="w-full h-full px-2.5 border-none" trigger="click">
                     <div class="flex">
-                        <div class="flex items-center"> <img :src="UserAvatar" /></div>
+                        <div class="flex items-center"> <img :src="UserAvatar" alt="头像" /></div>
                         <div class="flex items-center ml-2">admin</div>
                     </div>
                     <template #dropdown>
@@ -42,19 +38,16 @@
                 <re-icon name="Search" />
             </li>
         </ul>
-        <ui-settings v-model="drawerVisible" />
     </div>
 </template>
 
 <script setup lang="ts">
 import "./index.styl"
 import UserAvatar from "@/assets/img/user.jpeg"
-import UiSettings from "@/components/layout/ui-settings/index.vue"
 import ReIcon from '@/components/re-icon/index.vue'
 import { useRouter } from "vue-router"
 import { onMounted, ref, watch } from "vue";
 
-const drawerVisible = ref<boolean>(false)
 const collapse = ref<boolean>(false);
 const emits = defineEmits(['changeSidebarStatus'])
 const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
@@ -82,10 +75,6 @@ const handleCommand = (cmd: string) => {
             break;
     }
 }
-// 打开UI设置抽屉
-const openUISettings = () => {
-    drawerVisible.value = true
-}
 // 切换侧边栏
 const toggleSidebar = () => {
     collapse.value = !collapse.value;
@@ -102,11 +91,7 @@ onMounted(() => {
 })
 // 监听窗口宽度，小于1024px自动收缩侧边栏
 watch(() => screenWidth.value, (val) => {
-    if (val < 1024) {
-        collapse.value = true
-    } else {
-        collapse.value = false
-    }
+    collapse.value = val < 1024;
     emits("changeSidebarStatus", collapse.value)
 })
 </script>

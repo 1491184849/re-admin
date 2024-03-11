@@ -28,42 +28,20 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: "/auth",
+        meta: {
+          title: "权限控制",
+          icon: "mingcute:safe-lock-line",
+        },
+        component: () => import("@/views/auth/index.vue"),
+      },
+      {
         path: "/table",
         meta: {
           title: "智能表格",
           icon: "material-symbols:table-sharp",
         },
         component: () => import("@/views/table/index.vue"),
-      },
-      {
-        path: "/login-pages",
-        meta: {
-          title: "登录页面",
-          icon: "icon-park-outline:hanfu-chinese-style",
-        },
-        children: [
-          {
-            path: "/login-pages/one",
-            meta: {
-              title: "登录-1",
-            },
-            component: () => import("@/views/login-pages/one/index.vue"),
-          },
-          {
-            path: "/login-pages/two",
-            meta: {
-              title: "登录-2",
-            },
-            component: () => import("@/views/login-pages/two/index.vue"),
-          },
-          {
-            path: "/login-pages/three",
-            meta: {
-              title: "登录-3",
-            },
-            component: () => import("@/views/login-pages/three/index.vue"),
-          },
-        ],
       },
       {
         path: "/errors",
@@ -91,7 +69,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               title: "500(服务器错误)",
             },
-            component: () => import("@/views/errors/403.vue"),
+            component: () => import("@/views/errors/500.vue"),
           },
         ],
       },

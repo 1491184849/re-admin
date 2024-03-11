@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "element-plus": "^2.5.6",

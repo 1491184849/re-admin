@@ -1,3 +1,3 @@
 <template>
-    <div>two</div>
+    <div>权限</div>
 </template>

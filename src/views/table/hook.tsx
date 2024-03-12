@@ -1,3 +1,5 @@
+import {ref} from "vue";
+
 export function useTable() {
     const data = [
         {
@@ -12,6 +14,10 @@ export function useTable() {
         },
     ];
     const columns = [
+        {
+            type: "selection",
+            width: "50px"
+        },
         {
             prop: "name",
             label: "名称"
@@ -38,9 +44,11 @@ export function useTable() {
     const remove = (row: any) => {
         console.log(row);
     }
+    const tableRef = ref()
     return {
         data,
         columns,
-        filters
+        filters,
+        tableRef
     };
 }

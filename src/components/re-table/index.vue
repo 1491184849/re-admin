@@ -37,7 +37,8 @@
       </div>
       <el-table :data="tableData" :header-cell-style="headerCellStyle" :cell-style="props.cellStyle"
                 :border="props.border"
-                :row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)">
+                @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
+                @selection-change="tableSelectionChange">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
                          :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
                          :render-header="v.renderHeader" :sortable="v.sortable" :sort-method="v.sortMethod"
@@ -143,7 +144,7 @@ const props = withDefaults(defineProps<{
   headerRowClassName?: Function | string,
   headerRowStyle?: Function | object,
   headerCellClassName?: Function | string,
-  rowKey: Function | string,
+  rowKey: string,
   emptyText?: string,
   defaultExpandAll?: boolean,
   expandRowKeys?: object,
@@ -175,7 +176,8 @@ const props = withDefaults(defineProps<{
   enabledFilter: false
 });
 const emits = defineEmits<{
-  (e: 'row-click', row: any, col: any, event: Event): void
+  (e: 'row-click', row: any, col: any, event: Event): void,
+  (e: 'selection-change', selection: any[]): void
 }>();
 const isShowFilter = ref<boolean>((props.enabledFilter && props.filters && props.filters.length > 0) ?? false)
 const filterForm = reactive({
@@ -184,12 +186,21 @@ const filterForm = reactive({
 });
 const total = ref<number>(0);
 const tableData = ref<Array<any>>(props.data ?? []);
+const selectedRows = ref<any[]>();
+const selectedRowKeys = ref<any[]>();
 //查询
 const onQuery = () => {
 
 }
 //重置
 const onReset = () => {
+}
+const tableSelectionChange = (newSelection: any[]) => {
+  selectedRows.value = newSelection;
+  if (props.rowKey) {
+    selectedRowKeys.value = selectedRows.value?.map(x => x[props.rowKey]);
+  }
+  emits("selection-change", newSelection)
 }
 
 //异步请求接口数据
@@ -211,10 +222,20 @@ async function handleCurrentChange(val: number) {
   await requestData();
 }
 
+const refresh = async () => {
+  await requestData();
+}
+
+defineExpose({
+  refresh,
+  selectedRows,
+  selectedRowKeys
+})
+
 onBeforeMount(() => {
   if (isShowFilter) {
-    for (let i = 0; i < props.filters.length; i++) {
-      const item = props.filters[i];
+    for (let i = 0; i < props.filters!.length; i++) {
+      const item = props.filters![i];
       filterForm[item.key] = item?.defaultValue;
     }
   }

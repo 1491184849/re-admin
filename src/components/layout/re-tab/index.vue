@@ -63,7 +63,12 @@ const jumpPage = (path: string) => {
   router.push(path)
 }
 const closeTab = (_: any, i: number) => {
-  tabs?.value?.splice(i, 1)
+  tabs?.value?.splice(i, 1);
+  if (i >= 1) {
+    router.push(tabs.value![i - 1].path);
+  } else if (i === 0) {
+    router.push("/home");
+  }
 }
 const leftMoveShowTab = () => {
   startTabIndex.value -= 1

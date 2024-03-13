@@ -63,12 +63,15 @@ const jumpPage = (path: string) => {
   router.push(path)
 }
 const closeTab = (_: any, i: number) => {
-  tabs?.value?.splice(i, 1);
-  if (i >= 1) {
-    router.push(tabs.value![i - 1].path);
-  } else if (i === 0) {
-    router.push("/home");
+  //如果是活动标签，退回上一个
+  if (route.path === tabs.value![i].path) {
+    if (i >= 1) {
+      router.push(tabs.value![i - 1].path);
+    } else if (i === 0) {
+      router.push("/home");
+    }
   }
+  tabs?.value?.splice(i, 1);
 }
 const leftMoveShowTab = () => {
   startTabIndex.value -= 1

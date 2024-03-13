@@ -26,6 +26,6 @@ const selectionChange = (rows: any[]) => {
   manyButtonEnabled.value = !(rows && rows.length > 0);
 }
 onMounted(() => {
-  console.log(tableRef.value?.refresh)
+  console.debug(tableRef.value?.refresh)
 })
 </script>

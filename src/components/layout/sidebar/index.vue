@@ -2,21 +2,21 @@
   <div class="sidebar-wrapper">
     <div class="system-title">
       <a class="flex justify-center items-center text-white w-full h-full" href="/">
-        <img :src="VueLogo" class="mr-2" />
+        <img :src="VueLogo" class="mr-2" alt="logo"/>
         <span v-if="!model" class="font-bold">Re-Admin</span>
       </a>
     </div>
     <el-menu default-active="2" active-text-color="#ffffff" background-color="#17253b" text-color="#7c859f"
-      @open="handleOpen" @close="handleClose" class="custom-el-emnu" router :collapse="model">
-      <sidebar-item v-if="menus" v-for="(item, index) in menus" :key="index" :item="item" />
+             class="custom-el-menu" router :collapse="model" @select="menuSelected">
+      <sidebar-item v-if="menus" v-for="(item, index) in menus" :key="index" :item="item"/>
     </el-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
-import { RouteRecordRaw } from "vue-router";
-import { useRouteCache } from '@/router/hook';
+import {onMounted, ref, watch} from 'vue';
+import {RouteRecordRaw, useRouter} from "vue-router";
+import {useRouteCache} from '@/router/hook';
 import './index.styl'
 import SidebarItem from './sidebar-item.vue'
 import VueLogo from "@/assets/vue.svg"
@@ -24,11 +24,17 @@ import VueLogo from "@/assets/vue.svg"
 const model = defineModel()
 const menus = ref<RouteRecordRaw[] | undefined>([])
 const routesCache = useRouteCache();
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
+const router = useRouter();
+const emits = defineEmits<{
+  (e: "menu-selected", item: RouteRecordRaw): any
+}>()
+const menuSelected = (index: string) => {
+  if (index === "/" || index === "/home") {
+    return;
+  }
+  const allRoutes = router.getRoutes();
+  const item = allRoutes.find(x => x.path === index);
+  emits("menu-selected", item!);
 };
 onMounted(() => {
   const rawRoutes = routesCache.getCache();
@@ -36,7 +42,7 @@ onMounted(() => {
 })
 // 监听收缩状态
 watch(() => model.value, (val) => {
-  const elMenuDom = document.querySelector(".custom-el-emnu")
+  const elMenuDom = document.querySelector(".custom-el-menu")
   if (!elMenuDom) return;
   // true收缩，false展开
   if (val) {

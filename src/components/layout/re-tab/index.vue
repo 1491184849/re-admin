@@ -3,7 +3,7 @@
     <!-- 菜单标签 -->
     <div class="h-full flex items-center">
       <el-tag class="mr-2" @click="jumpPage('/')" :type="getActiveType(['/','/home'])">首页</el-tag>
-      <el-tag closable class="mr-2" v-for="(v,i) in computedTabs" :key="i" @close="(e: any) => closeTab(e, i)"
+      <el-tag closable class="mr-2" v-for="(v,i) in computedTabs" :key="i" @close="(e: any) => closeTab(e, v.path)"
               @click="jumpPage(v.path)" :type="getActiveType([v.path])">
         {{ v.meta?.title }}
       </el-tag>
@@ -25,7 +25,7 @@
         <el-button link icon="ArrowDown"></el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="closeCurrent">关闭标签页</el-dropdown-item>
+            <el-dropdown-item command="closeCurrent">关闭当前标签页</el-dropdown-item>
             <el-dropdown-item command="closeLeft">关闭左侧标签页</el-dropdown-item>
             <el-dropdown-item command="closeRight">关闭右侧标签页</el-dropdown-item>
             <el-dropdown-item command="closeOther">关闭其它标签页</el-dropdown-item>
@@ -52,17 +52,34 @@ const tabRef = ref<Element>()
 const route = useRoute();
 // dropdown下拉选择
 const handleCommand = (cmd: string) => {
+  const currentIndex = tabs.value?.findIndex(x => x.path === route.path)!;
+  if (currentIndex < 0) return;
   switch (cmd) {
-    case "signOut":
+    case "closeCurrent":
+      closeTab(null, route.path);
       break;
-    default:
+    case "closeLeft":
+      tabs.value?.splice(0, currentIndex);
+      break;
+    case "closeRight":
+      const tabLength = tabs.value!.length;
+      console.log(tabLength, currentIndex)
+      tabs.value?.splice(currentIndex + 1, tabLength - currentIndex + 1);
+      break;
+    case "closeOther":
+      tabs.value = [tabs.value![currentIndex]]
+      break;
+    case "closeAll":
+      tabs.value = [];
+      router.replace('/');
       break;
   }
 }
 const jumpPage = (path: string) => {
   router.push(path)
 }
-const closeTab = (_: any, i: number) => {
+const closeTab = (_: any, path: string) => {
+  const i = tabs.value?.findIndex(x => x.path === path)!;
   //如果是活动标签，退回上一个
   if (route.path === tabs.value![i].path) {
     if (i >= 1) {
@@ -72,11 +89,14 @@ const closeTab = (_: any, i: number) => {
     }
   }
   tabs?.value?.splice(i, 1);
+  endTabIndex.value -= 1;
+  if (startTabIndex.value >= 1 && endTabIndex.value - startTabIndex.value < maxShowTabLength.value) {
+    startTabIndex.value -= 1;
+  }
 }
 const leftMoveShowTab = () => {
   startTabIndex.value -= 1
   endTabIndex.value -= 1
-  updateShowTabByWidth(computedTabs.value, tabWrapperWidth.value!)
 }
 const rightMoveShowTab = () => {
   startTabIndex.value += 1
@@ -128,14 +148,18 @@ const addTab = () => {
     endTabIndex.value = tabs.value?.length! - 1;
   } else {
     updateShowTabByWidth(tabs.value, tabWrapperWidth.value!);
+    //活动标签是否显示，未显示更改起止索引
+    const activeIndex = tabs.value?.findIndex(x => x.path === route.path)! + 1;
+    if (activeIndex > endTabIndex.value) {
+      endTabIndex.value = activeIndex;
+      startTabIndex.value = endTabIndex.value - maxShowTabLength.value + 1;
+    }
   }
 }
 const showCurrentRouteTab = () => {
-  if (tabs.value?.length! > 0) {
-    const currentIndex = tabs.value?.findIndex(x => x.path === route.path);
-    if (currentIndex && currentIndex > 0 && tabs.value) {
-      tabs.value = [tabs.value[currentIndex]]
-    }
+  const currentRoute = router.getRoutes().find(x => x.path === route.path);
+  if (currentRoute) {
+    tabs.value = [currentRoute];
   }
 }
 const beforeunloadHandler = (_: any) => {
@@ -159,7 +183,7 @@ onMounted(() => {
   window.addEventListener("unload", (e) => unloadHandler(e));
 })
 onUnmounted(() => {
-  // window.removeEventListener("beforeunload", (e) => beforeunloadHandler(e));
-  // window.removeEventListener("unload", (e) => unloadHandler(e));
+  window.removeEventListener("beforeunload", (e) => beforeunloadHandler(e));
+  window.removeEventListener("unload", (e) => unloadHandler(e));
 })
 </script>

@@ -23,12 +23,6 @@
           </template>
         </el-dropdown>
       </li>
-      <!-- 待办事项 -->
-      <li>
-        <el-tooltip content="消息">
-          <re-icon name="Bell"/>
-        </el-tooltip>
-      </li>
       <!-- 全屏 -->
       <li @click="toggleFullScreen">
         <el-tooltip content="全屏">
@@ -55,7 +49,7 @@ import {useRouter} from "vue-router"
 import {onMounted, ref, watch} from "vue";
 
 const collapse = ref<boolean>(false);
-const emits = defineEmits(['changeSidebarStatus'])
+const emits = defineEmits(['changeSidebarStatus', 'jumpPage'])
 const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 const router = useRouter();
 // 切换全屏
@@ -75,7 +69,11 @@ const handleCommand = (cmd: string) => {
       router.replace("/login")
       break;
     case "baseInfo":
-      router.push("/person")
+      const personRoute = router.getRoutes().find(x => x.path === '/person');
+      if (personRoute) {
+        emits('jumpPage', personRoute);
+        router.push("/person")
+      }
       break;
     default:
       break;

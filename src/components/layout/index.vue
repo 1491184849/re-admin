@@ -6,7 +6,7 @@
       </el-aside>
       <el-container>
         <el-header>
-          <nav-bar @change-sidebar-status="changeSidebarStatus"/>
+          <nav-bar @change-sidebar-status="changeSidebarStatus" @jump-page="menuSelected"/>
         </el-header>
         <re-tab v-model="tabs" ref="tabRef"/>
         <el-main>

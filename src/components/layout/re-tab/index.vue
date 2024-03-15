@@ -41,7 +41,6 @@
 import "./index.styl"
 import {RouteRecordRaw, useRoute, useRouter} from 'vue-router'
 import {ref, watch, onMounted, computed, onUnmounted} from 'vue'
-import {useStore} from "vuex";
 
 const tabs = defineModel<RouteRecordRaw[]>()
 const router = useRouter()
@@ -51,7 +50,6 @@ const endTabIndex = ref<number>(0)
 const maxShowTabLength = ref<number>(0)
 const tabRef = ref<Element>()
 const route = useRoute();
-const store = useStore();
 // dropdown下拉选择
 const handleCommand = (cmd: string) => {
   const currentIndex = tabs.value?.findIndex(x => x.path === route.path)!;
@@ -160,9 +158,8 @@ const addTab = () => {
 }
 const showCurrentRouteTab = () => {
   const currentRoute = router.getRoutes().find(x => x.path === route.path);
-  if (currentRoute) {
-    store.state.reTabStore.commit('setActiveRoute', currentRoute);
-    tabs.value = [currentRoute];
+  if (currentRoute && currentRoute.path != '/' && currentRoute.path != '/home') {
+    localStorage.setItem('active-route', JSON.stringify(currentRoute));
   }
 }
 const beforeunloadHandler = (_: any) => {
@@ -184,7 +181,14 @@ onMounted(() => {
   resizeObserver.observe(tabRef.value!);
   window.addEventListener("beforeunload", (e) => beforeunloadHandler(e));
   window.addEventListener("unload", (e) => unloadHandler(e));
-  console.log(store.state.reTabStore.activeRoute)
+  //挂当前路由
+  const str = localStorage.getItem('active-route');
+  if (str) {
+    const currentRoute = JSON.parse(str)
+    if (currentRoute && route.path !== "/" && route.path !== "/home") {
+      tabs.value?.push(currentRoute);
+    }
+  }
 })
 onUnmounted(() => {
   window.removeEventListener("beforeunload", (e) => beforeunloadHandler(e));

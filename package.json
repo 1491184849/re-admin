@@ -15,10 +15,10 @@
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "element-plus": "^2.5.6",
+    "pinia": "^2.1.7",
     "stylus": "^0.62.0",
     "vue": "^3.4.19",
-    "vue-router": "4",
-    "vuex": "^4.0.2"
+    "vue-router": "4"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",

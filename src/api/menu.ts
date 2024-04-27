@@ -5,6 +5,7 @@ export interface MenuItemMena {
   title: string;
   icon: string;
   auths: string[];
+  roles?: string[];
 }
 
 export interface MenuItem {

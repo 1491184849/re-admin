@@ -31,13 +31,13 @@ export const useTabStore = defineStore("tabs", {
       if (typeof val === "number") {
         if (val > 0 && val <= this.tabs.length - 1) {
           this.tabs.splice(val, 1);
-          returnLastOne(val)
+          returnLastOne(val);
         }
       } else {
         const i = this.getIndex(val);
         if (i >= 0) {
           this.tabs.splice(i, 1);
-          returnLastOne(i)
+          returnLastOne(i);
         }
       }
       //如果是活动标签，则退回上一个
@@ -55,6 +55,18 @@ export const useTabStore = defineStore("tabs", {
     },
     closeActive() {
       this.tabs.splice(this.activeIndex, 1);
+    },
+    closeLeft() {
+      this.tabs.splice(0, this.activeIndex);
+    },
+    closeRight() {
+      this.tabs.splice(
+        this.activeIndex + 1,
+        this.tabs.length - this.activeIndex + 1
+      );
+    },
+    closeOther() {
+      this.tabs = [home, this.tabs[this.activeIndex]];
     },
     getIndex(path: string) {
       if (path === "/" || path === "/home") {

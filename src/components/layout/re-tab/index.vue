@@ -2,25 +2,25 @@
   <div class="re-tab-wrapper flex justify-between" ref="tabRef">
     <!-- 菜单标签 -->
     <div class="h-full flex items-center">
-      <el-tag class="mr-2" @click="jumpPage('/')" :type="getActiveType(['/', '/home'])">首页</el-tag>
-      <el-tag closable class="mr-2" v-for="(v, i) in computedTabs" :key="i" @close="(e: any) => closeTab(e, v.path)"
-        @click="jumpPage(v.path)" :type="getActiveType([v.path])">
-        {{ v.meta?.title }}
+      <el-tag class="mr-2" @click="()=>router.replace('/')" :type="getActiveType(['/', '/home'])">首页</el-tag>
+      <el-tag closable class="mr-2" v-for="v in computedTabs" :key="v.id" @close="(e: any) => closeTab(e, v.id)"
+              @click="jumpPage(v)" :type="getActiveType([v.path])">
+        {{ v.title }}
       </el-tag>
     </div>
     <!-- 操作按钮 -->
     <div class="h-full flex items-center">
       <div class="flex items-center">
         <el-button link icon="ArrowLeft" :disabled="startTabIndex <= 0" @click="leftMoveShowTab"></el-button>
-        <el-divider direction="vertical" />
+        <el-divider direction="vertical"/>
       </div>
       <div class="flex items-center">
         <el-button link icon="ArrowRight" :disabled="!tabs || endTabIndex + 1 >= tabs.length"
-          @click="rightMoveShowTab"></el-button>
-        <el-divider direction="vertical" />
+                   @click="rightMoveShowTab"></el-button>
+        <el-divider direction="vertical"/>
       </div>
       <el-button link icon="Refresh" @click="doRefresh"></el-button>
-      <el-divider direction="vertical" />
+      <el-divider direction="vertical"/>
       <el-dropdown @command="handleCommand" trigger="click">
         <el-button link icon="ArrowDown"></el-button>
         <template #dropdown>
@@ -39,10 +39,13 @@
 
 <script setup lang="ts">
 import "./index.styl"
-import { RouteRecordRaw, useRoute, useRouter } from 'vue-router'
-import { ref, watch, onMounted, computed, onUnmounted } from 'vue'
+import {RouteRecordRaw, useRoute, useRouter} from 'vue-router'
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
+import {useTabStore} from "@/store/tabStore.ts";
+import {CloseTabType, TabModel} from "#/data";
 
-const tabs = defineModel<RouteRecordRaw[]>()
+const coreTabStore = useTabStore();
+const tabs = ref<TabModel[]>(coreTabStore.tabs);
 const router = useRouter()
 const tabWrapperWidth = ref<number>()
 const startTabIndex = ref<number>(0)
@@ -52,56 +55,33 @@ const tabRef = ref<Element>()
 const route = useRoute();
 // dropdown下拉选择
 const handleCommand = (cmd: string) => {
-  const currentIndex = tabs.value?.findIndex(x => x.path === route.path)!;
-  if (currentIndex < 0) return;
   switch (cmd) {
     case "closeCurrent":
-      closeTab(null, route.path);
+      coreTabStore.close(CloseTabType.CURRENT);
       break;
     case "closeLeft":
-      tabs.value?.splice(0, currentIndex);
+      coreTabStore.close(CloseTabType.LEFT);
       break;
     case "closeRight":
-      const tabLength = tabs.value!.length;
-      console.log(tabLength, currentIndex)
-      tabs.value?.splice(currentIndex + 1, tabLength - currentIndex + 1);
+      coreTabStore.close(CloseTabType.RIGHT);
       break;
     case "closeOther":
-      tabs.value = [tabs.value![currentIndex]]
+      coreTabStore.close(CloseTabType.OTHERS);
       break;
     case "closeAll":
-      tabs.value = [];
-      router.replace('/');
+      coreTabStore.close(CloseTabType.ALL);
       break;
   }
 }
-const jumpPage = (path: string) => {
-  router.push(path)
+const jumpPage = (v: TabModel) => {
+  coreTabStore.setActive(v);
 }
-const closeTab = (_: any, path: string) => {
-  const i = tabs.value?.findIndex(x => x.path === path)!;
-  //如果是活动标签，退回上一个
-  if (route.path === tabs.value![i].path) {
-    if (i >= 1) {
-      router.push(tabs.value![i - 1].path);
-    } else if (i === 0) {
-      router.push("/home");
-    }
-  }
-  tabs?.value?.splice(i, 1);
-  endTabIndex.value -= 1;
-  if (startTabIndex.value >= 1 && endTabIndex.value - startTabIndex.value < maxShowTabLength.value) {
-    startTabIndex.value -= 1;
-  }
+const closeTab = (_: any, id: string) => {
+  coreTabStore.close(CloseTabType.TARGET, id);
 }
 const leftMoveShowTab = () => {
-  startTabIndex.value -= 1
-  endTabIndex.value -= 1
 }
 const rightMoveShowTab = () => {
-  startTabIndex.value += 1
-  endTabIndex.value += 1
-  updateShowTabByWidth(computedTabs.value, tabWrapperWidth.value!)
 }
 const doRefresh = () => {
   window.location.reload()
@@ -134,10 +114,9 @@ const updateShowTabByWidth = (arr: RouteRecordRaw[] | undefined, val: number) =>
   endTabIndex.value = startTabIndex.value + len - 1
 }
 watch(() => tabWrapperWidth.value, (val) => {
-  updateShowTabByWidth(tabs?.value, val!);
 })
-const computedTabs = computed((): RouteRecordRaw[] => {
-  return tabs?.value?.slice(startTabIndex.value, endTabIndex.value + 1)!;
+const computedTabs = computed((): TabModel[] => {
+  return coreTabStore.displayTabs;
 })
 const getActiveType = (path: string[]): string => {
   for (let i = 0; i < path.length; i++) {
@@ -148,17 +127,6 @@ const getActiveType = (path: string[]): string => {
   return "info";
 }
 const addTab = () => {
-  if (endTabIndex.value <= 0) {
-    endTabIndex.value = tabs.value?.length! - 1;
-  } else {
-    updateShowTabByWidth(tabs.value, tabWrapperWidth.value!);
-    //活动标签是否显示，未显示更改起止索引
-    const activeIndex = tabs.value?.findIndex(x => x.path === route.path)! + 1;
-    if (activeIndex > endTabIndex.value) {
-      endTabIndex.value = activeIndex;
-      startTabIndex.value = endTabIndex.value - maxShowTabLength.value + 1;
-    }
-  }
 }
 const showCurrentRouteTab = () => {
   const currentRoute = router.getRoutes().find(x => x.path === route.path);

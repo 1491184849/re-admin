@@ -1,89 +1,101 @@
-import { defineStore } from "pinia";
-import { RouteRecordRaw } from "vue-router";
-import { getHomeRoute } from "@/router";
+import {defineStore} from "pinia";
+import {CloseTabType, TabModel} from "#/data";
+import {useRouter} from "vue-router";
+import {v4 as uuidv4} from 'uuid';
 
-const home = getHomeRoute();
+const router = useRouter();
+/**
+ * 跳到首页
+ */
+const toHome = () => {
+    router.replace('/');
+}
 export const useTabStore = defineStore("tabs", {
-  state: (): State => {
-    return {
-      tabs: [home],
-      activeIndex: 0,
-      startIndex: 0,
-      endIndex: 0,
-      maxShowLength: 1,
-    };
-  },
-  getters: {
-    activeTab: (state) => state.tabs[state.activeIndex],
-    showTabs: (state) => state.tabs.slice(state.startIndex, state.endIndex + 1),
-  },
-  actions: {
-    append(item: RouteRecordRaw) {
-      const i = this.getIndex(item.path);
-      if (i < 0) {
-        this.tabs.push(item);
-        this.activeIndex = this.tabs.length - 1;
-      } else {
-        this.activeIndex = i;
-      }
+    state: (): State => {
+        return {
+            tabs: [],
+            currentId: '', //当前标签，首页时为空字符串
+        };
     },
-    remove(val: string | number) {
-      if (typeof val === "number") {
-        if (val > 0 && val <= this.tabs.length - 1) {
-          this.tabs.splice(val, 1);
-          returnLastOne(val);
+    getters: {
+        displayTabs(state) {
+            return state.tabs;
         }
-      } else {
-        const i = this.getIndex(val);
-        if (i >= 0) {
-          this.tabs.splice(i, 1);
-          returnLastOne(i);
+    },
+    actions: {
+        setActive(v: TabModel) {
+            router.replace(v.path);
+            this.currentId = v.id;
+        },
+        /**
+         * 添加
+         * @param path
+         * @param title
+         */
+        append(path: string, title: string) {
+            const item = {
+                id: uuidv4(),
+                path: path,
+                title: title
+            };
+            this.tabs.push(item)
+        },
+        /**
+         * 关闭标签
+         * @param type 关闭操作类型
+         * @param targetId 指定标签ID
+         */
+        close(type: CloseTabType, targetId?: string | null | undefined) {
+            const wrapperThis = this;
+
+            /**
+             * 关闭指定标签
+             * @param _targetId 指定标签ID
+             */
+            function closeTarget(_targetId: string | null | undefined) {
+                if (!_targetId) return;
+                const _index = wrapperThis.tabs.findIndex(x => x.id === _targetId);
+                if (_index < 0) return;
+                //关闭指定标签，要跳至上一个；数组第一个标签被关闭跳回首页
+                if (_index === 0) {
+                    wrapperThis.currentId = '';
+                    toHome();
+                } else {
+                    const lastTab = wrapperThis.tabs[_index - 1];
+                    wrapperThis.currentId = lastTab.id;
+                    router.replace(lastTab.path);
+                }
+            }
+
+            if (this.tabs.length === 0) return;
+            if (type === CloseTabType.ALL) {
+                this.tabs = [];
+                this.currentId = '';
+                toHome();
+            } else {
+                const index = this.tabs.findIndex(x => x.id === this.currentId);
+                if (!this.currentId || index < 0) return;
+                if (type === CloseTabType.TARGET) {
+                    closeTarget(targetId);
+                } else if (type === CloseTabType.CURRENT) {
+                    this.tabs.splice(index, 1);
+                    closeTarget(this.currentId);
+                } else if (type === CloseTabType.LEFT) {
+                    this.tabs.splice(0, index);
+                } else if (type === CloseTabType.RIGHT) {
+                    const rightCount = this.tabs.length - index - 1;
+                    if (rightCount > 0) {
+                        this.tabs.splice(index + 1, rightCount);
+                    }
+                } else if (type === CloseTabType.OTHERS) {
+                    this.tabs = this.tabs.filter(x => x.id !== this.currentId);
+                }
+            }
         }
-      }
-      //如果是活动标签，则退回上一个
-      const wrap = this;
-      function returnLastOne(index: number) {
-        if (index >= 1) {
-          wrap.activeIndex = index - 1;
-        } else {
-          wrap.activeIndex = 0;
-        }
-      }
     },
-    closeAll() {
-      this.tabs = [home];
-    },
-    closeActive() {
-      this.tabs.splice(this.activeIndex, 1);
-    },
-    closeLeft() {
-      this.tabs.splice(0, this.activeIndex);
-    },
-    closeRight() {
-      this.tabs.splice(
-        this.activeIndex + 1,
-        this.tabs.length - this.activeIndex + 1
-      );
-    },
-    closeOther() {
-      this.tabs = [home, this.tabs[this.activeIndex]];
-    },
-    getIndex(path: string) {
-      if (path === "/" || path === "/home") {
-        return 0;
-      }
-      return this.tabs.findIndex((x) => x.path === path);
-    },
-    setMaxShowLength(length: number) {
-      this.maxShowLength = length;
-    },
-  },
 });
 
 interface State {
-  tabs: RouteRecordRaw[];
-  activeIndex: number;
-  startIndex: number;
-  endIndex: number;
-  maxShowLength: number;
+    tabs: TabModel[];
+    currentId: string;
 }

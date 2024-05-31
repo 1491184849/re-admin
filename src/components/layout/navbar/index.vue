@@ -2,17 +2,17 @@
   <div class="navbar-wrapper flex items-center">
     <!-- 侧边菜单收缩切换按钮 -->
     <div class="btn-toggle-wrapper h-full" @click="toggleSidebar">
-            <span class="btn-toggle">
-                <re-icon v-if="collapse" name="ant-design:menu-unfold-outlined"/>
-                <re-icon v-else name="ant-design:menu-fold-outlined"/>
-            </span>
+      <span class="btn-toggle">
+        <re-icon v-if="collapse" name="ant-design:menu-unfold-outlined" />
+        <re-icon v-else name="ant-design:menu-fold-outlined" />
+      </span>
     </div>
     <ul class="w-full list-none flex flex-row-reverse items-center">
       <!-- 用户头像，昵称 -->
       <li style="padding: 0;">
         <el-dropdown @command="handleCommand" class="w-full h-full px-2.5 border-none" trigger="click">
           <div class="flex">
-            <div class="flex items-center"><img :src="UserAvatar" alt="头像"/></div>
+            <div class="flex items-center"><img :src="UserAvatar" alt="头像" /></div>
             <div class="flex items-center ml-2">admin</div>
           </div>
           <template #dropdown>
@@ -27,14 +27,14 @@
       <li @click="toggleFullScreen">
         <el-tooltip content="全屏">
           <el-icon>
-            <FullScreen/>
+            <FullScreen />
           </el-icon>
         </el-tooltip>
       </li>
       <!-- 搜索 -->
       <li>
         <el-tooltip content="搜索">
-          <re-icon name="Search"/>
+          <re-icon name="Search" />
         </el-tooltip>
       </li>
     </ul>
@@ -45,11 +45,13 @@
 import "./index.styl"
 import UserAvatar from "@/assets/img/user.jpeg"
 import ReIcon from '@/components/re-icon/index.vue'
-import {useRouter} from "vue-router"
-import {onMounted, ref, watch} from "vue";
+import { useRouter } from "vue-router"
+import { onMounted, ref, watch } from "vue";
+import { useTabStore } from "@/store/tabStore";
 
+const coreTabStore = useTabStore();
 const collapse = ref<boolean>(false);
-const emits = defineEmits(['changeSidebarStatus', 'jumpPage'])
+const emits = defineEmits(['changeSidebarStatus'])
 const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 const router = useRouter();
 // 切换全屏
@@ -71,8 +73,7 @@ const handleCommand = (cmd: string) => {
     case "baseInfo":
       const personRoute = router.getRoutes().find(x => x.path === '/person');
       if (personRoute) {
-        emits('jumpPage', personRoute);
-        router.push("/person")
+        coreTabStore.append('/person');
       }
       break;
     default:

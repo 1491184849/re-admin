@@ -1,16 +1,6 @@
 import { defineStore } from "pinia";
-import { useRouter } from "vue-router";
 import { v4 as uuidv4 } from "uuid";
-import { useRouteCache } from "@/router/hook";
 
-const routerCache = useRouteCache();
-const router = useRouter();
-/**
- * 跳到首页
- */
-const toHome = () => {
-  router.replace("/");
-};
 export const useTabStore = defineStore("tabs", {
   state: (): State => {
     return {
@@ -25,7 +15,6 @@ export const useTabStore = defineStore("tabs", {
   },
   actions: {
     setActive(v: TabModel) {
-      router.replace(v.path);
       this.currentId = v.id;
     },
     /**
@@ -58,7 +47,11 @@ export const useTabStore = defineStore("tabs", {
      * @param type 关闭操作类型
      * @param targetId 指定标签ID
      */
-    close(type: CloseTabType, targetId?: string | null | undefined) {
+    close(
+      type: CloseTabType,
+      replaceRouter: Function,
+      targetId?: string | null | undefined
+    ) {
       const wrapperThis = this;
 
       /**
@@ -72,11 +65,11 @@ export const useTabStore = defineStore("tabs", {
         //关闭指定标签，要跳至上一个；数组第一个标签被关闭跳回首页
         if (_index === 0) {
           wrapperThis.currentId = "";
-          toHome();
+          replaceRouter("/");
         } else {
           const lastTab = wrapperThis.tabs[_index - 1];
           wrapperThis.currentId = lastTab.id;
-          router.replace(lastTab.path);
+          replaceRouter(lastTab.path);
         }
       }
 
@@ -84,7 +77,6 @@ export const useTabStore = defineStore("tabs", {
       if (type === CloseTabType.ALL) {
         this.tabs = [];
         this.currentId = "";
-        toHome();
       } else {
         const index = this.tabs.findIndex((x) => x.id === this.currentId);
         if (!this.currentId || index < 0) return;

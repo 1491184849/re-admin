@@ -5,6 +5,7 @@ import Home from "@/views/home/index.vue";
 import Person from "@/views/person/index.vue";
 import { MenuItem, getSidebarMenus } from "@/api/menu";
 import { useRouteCache } from "./hook";
+import { HOME_PATH } from "@/consts";
 
 // views下页面
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
@@ -17,10 +18,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/",
     component: Layout,
-    redirect: "/home",
+    redirect: HOME_PATH,
     children: [
       {
-        path: "/home",
+        path: HOME_PATH,
         component: Home,
         meta: {
           title: "首页",

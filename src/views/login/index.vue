@@ -56,7 +56,7 @@ const login = () => {
       userLogin(form).then((res) => {
         userStore.setUser(res.data as UserAuthInfo);
         ElMessage.success(res.message)
-        router.replace("/home")
+        router.replace("/")
       });
     }
   });

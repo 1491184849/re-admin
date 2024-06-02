@@ -3,7 +3,7 @@
     <!-- 菜单标签 -->
     <div class="h-full flex items-center relative">
       <el-tag class="mr-2" @click="jumpPage({ id: '', path: '/', title: '' })"
-        :type="getActiveType(['/', '/home'])">首页</el-tag>
+        :type="getActiveType(['/', HOME_PATH])">首页</el-tag>
       <div class="flex" id="dynamicTabContainer">
         <div id="dynamicTabContent" class="flex">
           <el-tag closable class="mr-2" v-for="v in computedTabs" :key="v.id" @close="(e: any) => closeTab(e, v.id)"
@@ -47,6 +47,7 @@ import { useRoute } from "vue-router";
 import { computed, onMounted, watch, ref } from "vue";
 import { CloseTabType, TabModel } from "@/store/tabStore";
 import { useTabManager } from "@/hooks/useTabManager";
+import { HOME_PATH } from '@/consts'
 
 const tabManager = useTabManager();
 const route = useRoute();

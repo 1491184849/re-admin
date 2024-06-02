@@ -1,5 +1,6 @@
 import { CloseTabType, TabModel, useTabStore } from "@/store/tabStore";
 import { useRouter } from "vue-router";
+import { HOME_PATH } from "@/consts";
 
 export function useTabManager() {
   const coreTabStore = useTabStore();
@@ -11,6 +12,11 @@ export function useTabManager() {
   }
 
   function append(path: string, title?: string | null | undefined) {
+    if (path === "/" || path === HOME_PATH) {
+      coreTabStore.setActive("");
+      router.replace("/");
+      return;
+    }
     const arr = getDisplayTabs();
     const existIndex = arr.findIndex((x) => x.path === path);
     //存在就选中

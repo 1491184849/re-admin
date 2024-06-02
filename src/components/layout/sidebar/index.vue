@@ -6,8 +6,8 @@
         <span v-if="!model" class="font-bold">Re-Admin</span>
       </a>
     </div>
-    <el-menu :default-active="computedActivePath" active-text-color="#ffffff" background-color="#17253b" text-color="#7c859f"
-      class="custom-el-menu" :collapse="model" @select="menuSelected">
+    <el-menu :default-active="computedActivePath" active-text-color="#ffffff" background-color="#17253b"
+      text-color="#7c859f" class="custom-el-menu" :collapse="model" @select="menuSelected">
       <sidebar-item v-if="menus" v-for="(item, index) in menus" :key="index" :item="item" />
     </el-menu>
   </div>
@@ -21,26 +21,21 @@ import './index.styl'
 import SidebarItem from './sidebar-item.vue'
 import VueLogo from "@/assets/vue.svg"
 import { useTabManager } from '@/hooks/useTabManager';
+import { HOME_PATH } from '@/consts'
 
 const model = defineModel()
 const menus = ref<RouteRecordRaw[] | undefined>([])
 const routesCache = useRouteCache();
 const tabManager = useTabManager();
-const emits = defineEmits<{
-  (e: "menu-selected", item: RouteRecordRaw): any
-}>()
 const menuSelected = (index: string) => {
-  if (index === "/" || index === "/home") {
-    return;
-  }
   tabManager.append(index);
 };
 onMounted(() => {
   const rawRoutes = routesCache.getCache();
-  menus.value = rawRoutes?.find(x => x.path === "/")?.children?.filter(x => !x.meta?.hidden);
+  menus.value = rawRoutes?.find(x => x.path === "/")?.children?.filter(x => !x.meta?.hidden && x.path !== HOME_PATH);
 })
 const computedActivePath = computed((): string => {
-  return tabManager.getActiveItem()?.path ?? '/home';
+  return tabManager.getActiveItem()?.path ?? HOME_PATH;
 });
 // 监听收缩状态
 watch(() => model.value, (val) => {

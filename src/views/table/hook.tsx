@@ -1,3 +1,4 @@
+import { ReTableColumn } from "@/components/re-table/types";
 import { ref } from "vue";
 
 export function useTable() {
@@ -13,7 +14,7 @@ export function useTable() {
       hobby: "羽毛球",
     },
   ];
-  const columns = [
+  const columns: ReTableColumn[] = [
     {
       type: "selection",
       width: "50px",

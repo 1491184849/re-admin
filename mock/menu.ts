@@ -6,7 +6,7 @@ const methods: MockMethod[] = [
     method: "get",
     response: () => {
       return {
-        code: 0,
+        code: 200,
         data: [
           {
             path: "/system",

@@ -8,7 +8,7 @@ const methods: MockMethod[] = [
         response: ({body}) => {
             if (body.username === "admin" && body.password === "123456") {
                 return {
-                    code: 0,
+                    code: 200,
                     message: "登录成功",
                     data: {
                         username: body.username,

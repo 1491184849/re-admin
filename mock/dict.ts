@@ -56,7 +56,7 @@ const methods: MockMethod[] = [
         method: "get",
         response: ({body}) => {
             const res = {
-                code: 0,
+                code: 200,
                 total: data.length,
                 data: data
             }

@@ -26,7 +26,7 @@ service.interceptors.response.use(
             // 存在code属性表示格式正确
             const code = response.data["code"];
             if (code) {
-                if (code === 0) return response.data;
+                if (code === 200) return response.data;
                 else {
                     if (response.data.message) ElMessage.error(response.data.message);
                     else ElMessage.error("响应失败，状态码：" + response.status);

@@ -2,7 +2,8 @@
   <div class="re-tab-wrapper flex justify-between" ref="tabRef">
     <!-- 菜单标签 -->
     <div class="h-full flex items-center">
-      <el-tag class="mr-2" @click="homeTestJumpPage()" :type="getActiveType(['/', '/home'])">首页</el-tag>
+      <el-tag class="mr-2" @click="jumpPage({ id: '', path: '/', title: '' })"
+        :type="getActiveType(['/', '/home'])">首页</el-tag>
       <el-tag closable class="mr-2" v-for="v in computedTabs" :key="v.id" @close="(e: any) => closeTab(e, v.id)"
         @click="jumpPage(v)" :type="getActiveType([v.path])">
         {{ v.title }}
@@ -41,10 +42,10 @@
 import "./index.styl";
 import { RouteRecordRaw, useRoute, useRouter } from "vue-router";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { CloseTabType, TabModel, useTabStore } from "@/store/tabStore";
+import { CloseTabType, TabModel } from "@/store/tabStore";
 import { useTabManager } from "@/hooks/useTabManager";
 
-const coreTabStore = useTabStore();
+const tabManager = useTabManager();
 const tabs = ref<TabModel[]>();
 const router = useRouter();
 const tabWrapperWidth = ref<number>();
@@ -53,32 +54,31 @@ const endTabIndex = ref<number>(0);
 const maxShowTabLength = ref<number>(0);
 const tabRef = ref<Element>();
 const route = useRoute();
-const { jumpPage: homeTestJumpPage } = useTabManager();
 // dropdown下拉选择
 const handleCommand = (cmd: string) => {
   switch (cmd) {
     case "closeCurrent":
-      coreTabStore.close(CloseTabType.CURRENT);
+      tabManager.close(CloseTabType.CURRENT);
       break;
     case "closeLeft":
-      coreTabStore.close(CloseTabType.LEFT);
+      tabManager.close(CloseTabType.LEFT);
       break;
     case "closeRight":
-      coreTabStore.close(CloseTabType.RIGHT);
+      tabManager.close(CloseTabType.RIGHT);
       break;
     case "closeOther":
-      coreTabStore.close(CloseTabType.OTHERS);
+      tabManager.close(CloseTabType.OTHERS);
       break;
     case "closeAll":
-      coreTabStore.close(CloseTabType.ALL);
+      tabManager.close(CloseTabType.ALL);
       break;
   }
 };
 const jumpPage = (v: TabModel) => {
-  coreTabStore.setActive(v);
+  tabManager.setActive(v);
 };
 const closeTab = (_: any, id: string) => {
-  coreTabStore.close(CloseTabType.TARGET, id);
+  tabManager.close(CloseTabType.TARGET, id);
 };
 const leftMoveShowTab = () => { };
 const rightMoveShowTab = () => { };
@@ -120,8 +120,8 @@ watch(
   (val) => { }
 );
 const computedTabs = computed((): TabModel[] => {
-  console.log(coreTabStore.displayTabs);
-  return coreTabStore.displayTabs;
+  console.log(tabManager.getDisplayTabs());
+  return tabManager.getDisplayTabs();
 });
 const getActiveType = (path: string[]): string => {
   for (let i = 0; i < path.length; i++) {

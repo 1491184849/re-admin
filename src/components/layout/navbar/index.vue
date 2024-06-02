@@ -47,9 +47,9 @@ import UserAvatar from "@/assets/img/user.jpeg"
 import ReIcon from '@/components/re-icon/index.vue'
 import { useRouter } from "vue-router"
 import { onMounted, ref, watch } from "vue";
-import { useTabStore } from "@/store/tabStore";
+import { useTabManager } from "@/hooks/useTabManager";
 
-const coreTabStore = useTabStore();
+const tabManager = useTabManager();
 const collapse = ref<boolean>(false);
 const emits = defineEmits(['changeSidebarStatus'])
 const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
@@ -73,7 +73,7 @@ const handleCommand = (cmd: string) => {
     case "baseInfo":
       const personRoute = router.getRoutes().find(x => x.path === '/person');
       if (personRoute) {
-        coreTabStore.append('/person');
+        tabManager.append('/person');
       }
       break;
     default:

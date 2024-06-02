@@ -20,12 +20,12 @@ import { useRouteCache } from '@/router/hook';
 import './index.styl'
 import SidebarItem from './sidebar-item.vue'
 import VueLogo from "@/assets/vue.svg"
-import { useTabStore } from '@/store/tabStore';
+import { useTabManager } from '@/hooks/useTabManager';
 
 const model = defineModel()
 const menus = ref<RouteRecordRaw[] | undefined>([])
 const routesCache = useRouteCache();
-const coreTabStore = useTabStore();
+const tabManager = useTabManager();
 const emits = defineEmits<{
   (e: "menu-selected", item: RouteRecordRaw): any
 }>()
@@ -33,7 +33,7 @@ const menuSelected = (index: string) => {
   if (index === "/" || index === "/home") {
     return;
   }
-  coreTabStore.append(index);
+  tabManager.append(index);
 };
 onMounted(() => {
   const rawRoutes = routesCache.getCache();

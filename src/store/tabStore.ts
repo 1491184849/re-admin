@@ -8,14 +8,15 @@ export const useTabStore = defineStore("tabs", {
       currentId: "", //当前标签，首页时为空字符串
     };
   },
+  persist: true,
   getters: {
     displayTabs(state) {
       return state.tabs;
     },
   },
   actions: {
-    setActive(v: TabModel) {
-      this.currentId = v.id;
+    setActive(id: string) {
+      this.currentId = id;
     },
     /**
      * 添加
@@ -23,24 +24,14 @@ export const useTabStore = defineStore("tabs", {
      * @param title
      */
     append(path: string, title?: string | null | undefined) {
-      const caches = routerCache.getCache();
       if (!caches) return;
       const item = {
         id: uuidv4(),
         path: path,
-        title: "未知标签",
+        title: title ?? "未知标签",
       };
-      if (title) {
-        item.title = title;
-      } else {
-        const pathRouter = caches[1].children?.find(
-          (x) => x.path === path || x.redirect === path
-        );
-        if (pathRouter) {
-          item.title = (pathRouter.meta?.title ?? "未知标签" + path) as string;
-        }
-      }
       this.tabs.push(item);
+      this.setActive(item.id);
     },
     /**
      * 关闭标签
@@ -71,29 +62,42 @@ export const useTabStore = defineStore("tabs", {
           wrapperThis.currentId = lastTab.id;
           replaceRouter(lastTab.path);
         }
+        wrapperThis.tabs.splice(_index, 1);
       }
 
       if (this.tabs.length === 0) return;
       if (type === CloseTabType.ALL) {
         this.tabs = [];
         this.currentId = "";
+        replaceRouter("/");
       } else {
-        const index = this.tabs.findIndex((x) => x.id === this.currentId);
-        if (!this.currentId || index < 0) return;
         if (type === CloseTabType.TARGET) {
           closeTarget(targetId);
-        } else if (type === CloseTabType.CURRENT) {
-          this.tabs.splice(index, 1);
-          closeTarget(this.currentId);
-        } else if (type === CloseTabType.LEFT) {
-          this.tabs.splice(0, index);
-        } else if (type === CloseTabType.RIGHT) {
-          const rightCount = this.tabs.length - index - 1;
-          if (rightCount > 0) {
-            this.tabs.splice(index + 1, rightCount);
+        } else {
+          const index = this.tabs.findIndex((x) => x.id === this.currentId);
+          const isActiveHome = !this.currentId || index < 0; //活动标签是否首页
+          if (type === CloseTabType.CURRENT && !isActiveHome) {
+            closeTarget(this.currentId);
+          } else if (type === CloseTabType.LEFT && !isActiveHome) {
+            this.tabs.splice(0, index);
+          } else if (type === CloseTabType.RIGHT) {
+            if (isActiveHome) {
+              this.tabs = [];
+              replaceRouter("/");
+              return;
+            }
+            const rightCount = this.tabs.length - index - 1;
+            if (rightCount > 0) {
+              this.tabs.splice(index + 1, rightCount);
+            }
+          } else if (type === CloseTabType.OTHERS) {
+            if (isActiveHome) {
+              this.tabs = [];
+              replaceRouter("/");
+              return;
+            }
+            this.tabs = [this.tabs[index]];
           }
-        } else if (type === CloseTabType.OTHERS) {
-          this.tabs = this.tabs.filter((x) => x.id !== this.currentId);
         }
       }
     },

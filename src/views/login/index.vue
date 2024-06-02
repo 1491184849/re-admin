@@ -41,7 +41,9 @@ import { ElMessage, FormInstance, FormRules } from "element-plus";
 import { reactive, ref } from "vue";
 import { LoginForm, userLogin } from "@/api/login";
 import { useRouter } from "vue-router";
+import { useUserStore, UserAuthInfo } from "@/store/userStore"
 
+const userStore = useUserStore();
 const formRef = ref<FormInstance>();
 const form = reactive<LoginForm>({
   username: "admin",
@@ -52,6 +54,7 @@ const login = () => {
   formRef?.value?.validate((valid) => {
     if (valid) {
       userLogin(form).then((res) => {
+        userStore.setUser(res.data as UserAuthInfo);
         ElMessage.success(res.message)
         router.replace("/home")
       });

@@ -10,7 +10,7 @@ export interface LoginData {
   username: string;
   accessToken: string;
   refreshToken: string;
-  expired: string;
+  expiredTime: Date;
 }
 
 // 用户登录

@@ -13,6 +13,9 @@ export const useTabStore = defineStore("tabs", {
     displayTabs(state) {
       return state.tabs;
     },
+    activeItem(state) {
+      return state.tabs.find((x) => x.id === state.currentId);
+    },
   },
   actions: {
     setActive(id: string) {
@@ -53,14 +56,16 @@ export const useTabStore = defineStore("tabs", {
         if (!_targetId) return;
         const _index = wrapperThis.tabs.findIndex((x) => x.id === _targetId);
         if (_index < 0) return;
-        //关闭指定标签，要跳至上一个；数组第一个标签被关闭跳回首页
-        if (_index === 0) {
-          wrapperThis.currentId = "";
-          replaceRouter("/");
-        } else {
-          const lastTab = wrapperThis.tabs[_index - 1];
-          wrapperThis.currentId = lastTab.id;
-          replaceRouter(lastTab.path);
+        //关闭指定标签，如果是活动标签，要跳至上一个；数组第一个标签被关闭跳回首页
+        if (wrapperThis.currentId === _targetId) {
+          if (_index === 0) {
+            wrapperThis.currentId = "";
+            replaceRouter("/");
+          } else {
+            const lastTab = wrapperThis.tabs[_index - 1];
+            wrapperThis.currentId = lastTab.id;
+            replaceRouter(lastTab.path);
+          }
         }
         wrapperThis.tabs.splice(_index, 1);
       }

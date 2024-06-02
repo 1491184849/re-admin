@@ -1,5 +1,5 @@
 <template>
-  <div class="re-tab-wrapper flex justify-between" ref="tabRef">
+  <div class="re-tab-wrapper flex justify-between">
     <!-- 菜单标签 -->
     <div class="h-full flex items-center">
       <el-tag class="mr-2" @click="jumpPage({ id: '', path: '/', title: '' })"
@@ -12,11 +12,11 @@
     <!-- 操作按钮 -->
     <div class="h-full flex items-center">
       <div class="flex items-center">
-        <el-button link icon="ArrowLeft" :disabled="startTabIndex <= 0" @click="leftMoveShowTab"></el-button>
+        <el-button link icon="ArrowLeft" @click="leftMoveShowTab"></el-button>
         <el-divider direction="vertical" />
       </div>
       <div class="flex items-center">
-        <el-button link icon="ArrowRight" :disabled="!tabs || endTabIndex + 1 >= tabs.length"
+        <el-button link icon="ArrowRight"
           @click="rightMoveShowTab"></el-button>
         <el-divider direction="vertical" />
       </div>
@@ -40,19 +40,12 @@
 
 <script setup lang="ts">
 import "./index.styl";
-import { RouteRecordRaw, useRoute, useRouter } from "vue-router";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import {  useRoute } from "vue-router";
+import { computed, onMounted, onUnmounted } from "vue";
 import { CloseTabType, TabModel } from "@/store/tabStore";
 import { useTabManager } from "@/hooks/useTabManager";
 
 const tabManager = useTabManager();
-const tabs = ref<TabModel[]>();
-const router = useRouter();
-const tabWrapperWidth = ref<number>();
-const startTabIndex = ref<number>(0);
-const endTabIndex = ref<number>(0);
-const maxShowTabLength = ref<number>(0);
-const tabRef = ref<Element>();
 const route = useRoute();
 // dropdown下拉选择
 const handleCommand = (cmd: string) => {
@@ -85,42 +78,7 @@ const rightMoveShowTab = () => { };
 const doRefresh = () => {
   window.location.reload();
 };
-/**
- *  一个字12px，关闭图标12px，内填充14px，字和关闭图标间距6px，右间距8px = n*12+40
- * 侧边栏占200px，首页标签占44px，固定操作按钮（单个图标+分割线占37px）占131px，两端内填充30px
- * @param arr
- * @param val re-tab-wrapper宽度
- */
-const updateShowTabByWidth = (
-  arr: RouteRecordRaw[] | undefined,
-  val: number
-) => {
-  if (!arr || arr.length === 0) {
-    return;
-  }
-  const blankWidth = val - 205;
-  let dynamicTabWidth = 0;
-  let len = arr.length;
-  for (let i = 0; i < arr.length; i++) {
-    let titleLen = 64;
-    if (arr[i].meta?.title instanceof String) {
-      titleLen = (arr[i].meta?.title as string).length;
-    }
-    dynamicTabWidth += titleLen * 12 + 40;
-    if (dynamicTabWidth > blankWidth) {
-      len = i;
-      break;
-    }
-  }
-  maxShowTabLength.value = len;
-  endTabIndex.value = startTabIndex.value + len - 1;
-};
-watch(
-  () => tabWrapperWidth.value,
-  (val) => { }
-);
 const computedTabs = computed((): TabModel[] => {
-  console.log(tabManager.getDisplayTabs());
   return tabManager.getDisplayTabs();
 });
 const getActiveType = (path: string[]): string => {
@@ -131,47 +89,11 @@ const getActiveType = (path: string[]): string => {
   }
   return "info";
 };
-const addTab = () => { };
-const showCurrentRouteTab = () => {
-  const currentRoute = router.getRoutes().find((x) => x.path === route.path);
-  if (
-    currentRoute &&
-    currentRoute.path != "/" &&
-    currentRoute.path != "/home"
-  ) {
-    localStorage.setItem("active-route", JSON.stringify(currentRoute));
-  }
-};
-const beforeunloadHandler = (_: any) => {
-  showCurrentRouteTab();
-};
-const unloadHandler = (_: any) => {
-  showCurrentRouteTab();
-};
 defineExpose({
-  addTab,
 });
 onMounted(() => {
-  const resizeObserver = new ResizeObserver((entries) => {
-    // 处理大小变化的回调函数
-    for (const entry of entries) {
-      tabWrapperWidth.value = entry.target.clientWidth;
-    }
-  });
-  resizeObserver.observe(tabRef.value!);
-  window.addEventListener("beforeunload", (e) => beforeunloadHandler(e));
-  window.addEventListener("unload", (e) => unloadHandler(e));
-  //挂当前路由
-  const str = localStorage.getItem("active-route");
-  if (str) {
-    const currentRoute = JSON.parse(str);
-    if (currentRoute && route.path !== "/" && route.path !== "/home") {
-      tabs.value?.push(currentRoute);
-    }
-  }
+
 });
 onUnmounted(() => {
-  window.removeEventListener("beforeunload", (e) => beforeunloadHandler(e));
-  window.removeEventListener("unload", (e) => unloadHandler(e));
 });
 </script>

@@ -12,7 +12,12 @@ export function useTabManager() {
 
   function append(path: string, title?: string | null | undefined) {
     const arr = getDisplayTabs();
-    if (arr.some((x) => x.path === path)) return;
+    const existIndex = arr.findIndex((x) => x.path === path);
+    //存在就选中
+    if (existIndex >= 0) {
+      setActive(arr[existIndex]);
+      return;
+    }
     if (!title) {
       title = (router.getRoutes().find((x) => x.path === path)?.meta?.title ??
         null) as string | null;
@@ -29,6 +34,10 @@ export function useTabManager() {
     return coreTabStore.displayTabs;
   }
 
+  function getActiveItem() {
+    return coreTabStore.activeItem;
+  }
+
   function replaceRouter(path: string) {
     router.replace(path);
   }
@@ -38,5 +47,6 @@ export function useTabManager() {
     setActive,
     close,
     getDisplayTabs,
+    getActiveItem,
   };
 }

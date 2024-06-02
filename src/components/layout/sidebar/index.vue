@@ -6,15 +6,15 @@
         <span v-if="!model" class="font-bold">Re-Admin</span>
       </a>
     </div>
-    <el-menu default-active="2" active-text-color="#ffffff" background-color="#17253b" text-color="#7c859f"
-      class="custom-el-menu" router :collapse="model" @select="menuSelected">
+    <el-menu :default-active="computedActivePath" active-text-color="#ffffff" background-color="#17253b" text-color="#7c859f"
+      class="custom-el-menu" :collapse="model" @select="menuSelected">
       <sidebar-item v-if="menus" v-for="(item, index) in menus" :key="index" :item="item" />
     </el-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { RouteRecordRaw } from "vue-router";
 import { useRouteCache } from '@/router/hook';
 import './index.styl'
@@ -39,6 +39,9 @@ onMounted(() => {
   const rawRoutes = routesCache.getCache();
   menus.value = rawRoutes?.find(x => x.path === "/")?.children?.filter(x => !x.meta?.hidden);
 })
+const computedActivePath = computed((): string => {
+  return tabManager.getActiveItem()?.path ?? '/home';
+});
 // 监听收缩状态
 watch(() => model.value, (val) => {
   const elMenuDom = document.querySelector(".custom-el-menu")

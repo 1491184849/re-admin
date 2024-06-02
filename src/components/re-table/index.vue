@@ -2,54 +2,40 @@
   <div class="re-table-wrapper">
     <!-- 查询 --->
     <div class="re-filter-card" v-if="isShowFilter">
-      <el-form :model="filterForm" :inline="true" ref="formRef">
-        <el-form-item
-            :label="v.label"
-            v-for="(v, i) in filters"
-            :key="i"
-            :prop="v.key"
-        >
-          <el-input
-              v-if="v.type === 'text' || !v.type"
-              :placeholder="v.placeholder"
-              :clearable="v.clearable"
-              v-model="filterForm[v.key]"
-          />
+      <el-form :model="filterForm" :inline="true" ref="searchFormRef">
+        <el-form-item :label="v.label" v-for="(v, i) in filters" :key="i" :prop="v.key">
+          <el-input v-if="v.type === 'text' || !v.type" :placeholder="v.placeholder" :clearable="v.clearable"
+            v-model="filterForm[v.key]" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onQuery">
-            <Icon class="mr-1" icon="material-symbols:search-rounded"/>
+            <Icon class="mr-1" icon="material-symbols:search-rounded" />
             查询
-          </el-button
-          >
+          </el-button>
           <el-button @click="onReset">
-            <Icon class="mr-1" icon="material-symbols:refresh"/>
+            <Icon class="mr-1" icon="material-symbols:refresh" />
             重置
-          </el-button
-          >
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
     <!-- 列表 -->
-    <div :class="(isShowFilter?'mt-4':'')+' re-table-card'">
+    <div :class="(isShowFilter ? 'mt-4' : '') + ' re-table-card'">
       <div class="re-table-toolbar mb-4">
         <slot name="toolbar"></slot>
       </div>
       <el-table :data="tableData" :header-cell-style="headerCellStyle" :cell-style="props.cellStyle"
-                :border="props.border"
-                @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
-                @selection-change="tableSelectionChange">
+        :border="props.border" @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
+        @selection-change="tableSelectionChange">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
-                         :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
-                         :render-header="v.renderHeader" :sortable="v.sortable" :sort-method="v.sortMethod"
-                         :sort-by="v.sortBy"
-                         :sort-orders="v.sortOrders" :resizable="v.resizable" :formatter="v.formatter"
-                         :show-overflow-tooltip="v.showOverflowTooltip" :align="v.align" :header-align="v.headerAlign"
-                         :class-name="v.className" :label-class-name="v.labelClassName" :selectable="v.selectable"
-                         :reserve-selection="v.reserveSelection" :filters="v.filters"
-                         :filter-placement="v.filterPlacement"
-                         :filter-class-name="v.filterClassName" :filter-multiple="v.filterMultiple"
-                         :filter-method="v.filterMethod" :filtered-value="v.filteredValue">
+          :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
+          :render-header="v.renderHeader" :sortable="v.sortable" :sort-method="v.sortMethod" :sort-by="v.sortBy"
+          :sort-orders="v.sortOrders" :resizable="v.resizable" :formatter="v.formatter"
+          :show-overflow-tooltip="v.showOverflowTooltip" :align="v.align" :header-align="v.headerAlign"
+          :class-name="v.className" :label-class-name="v.labelClassName" :selectable="v.selectable"
+          :reserve-selection="v.reserveSelection" :filters="v.filters" :filter-placement="v.filterPlacement"
+          :filter-class-name="v.filterClassName" :filter-multiple="v.filterMultiple" :filter-method="v.filterMethod"
+          :filtered-value="v.filteredValue">
           <template #default="scope" v-if="v.render">
             <component :is="v.render(scope.row)"></component>
           </template>
@@ -57,17 +43,9 @@
       </el-table>
       <!--分页-->
       <div class="w-full flex flex-row-reverse mt-4" v-if="total > 0">
-        <el-pagination
-            v-model:page-size="filterForm.size"
-            :total="total"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :pager-count="5"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            small
-            background
-            layout="sizes, prev, pager, next"
-        />
+        <el-pagination v-model:page-size="filterForm.size" :total="total" :page-sizes="[10, 20, 30, 40, 50]"
+          :pager-count="5" @size-change="handleSizeChange" @current-change="handleCurrentChange" small background
+          layout="sizes, prev, pager, next" />
       </div>
     </div>
   </div>
@@ -75,9 +53,10 @@
 
 <script lang="ts" setup>
 import "./index.styl"
-import {Icon} from "@iconify/vue";
-import {CSSProperties, onBeforeMount, onMounted, reactive, ref} from "vue";
-import {ActionPageLike} from "#/data";
+import { Icon } from "@iconify/vue";
+import { CSSProperties, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { ActionPageLike } from "#/data";
+import { FormInstance } from "element-plus/es/components/form";
 
 type CustomRenderFunc = (row: any) => any;
 type CustomRequestFunc = (para: any) => Promise<ActionPageLike<any>>;
@@ -123,7 +102,7 @@ interface FilterStruct {
   defaultValue?: string
 }
 
-const headerCellStyle: CSSProperties = {background: '#fafafa', color: '#606266'};
+const headerCellStyle: CSSProperties = { background: '#fafafa', color: '#606266' };
 const props = withDefaults(defineProps<{
   columns: ReTableColumn[],
   //当request函数存在时，data不生效
@@ -188,12 +167,19 @@ const total = ref<number>(0);
 const tableData = ref<Array<any>>(props.data ?? []);
 const selectedRows = ref<any[]>();
 const selectedRowKeys = ref<any[]>();
+const searchFormRef = ref<FormInstance>();
 //查询
 const onQuery = () => {
-
+  if (props.request) {
+    requestData();
+  }
 }
 //重置
 const onReset = () => {
+  searchFormRef?.value?.resetFields();
+  if (props.request) {
+    requestData();
+  }
 }
 const tableSelectionChange = (newSelection: any[]) => {
   selectedRows.value = newSelection;

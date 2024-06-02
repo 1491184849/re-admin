@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "mock": "vite --mode mock --force",
+    "dev": "vite --mode dev",
+    "mock": "vite --mode mock",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },

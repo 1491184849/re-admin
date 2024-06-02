@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
     <div class="max-w-screen-lg mx-auto bg-white shadow sm:rounded-lg flex justify-center flex-1">
       <div class="w-1/2 max-sm:w-full p-6 text-center flex flex-col items-center justify-center">
-        <h1 class="text-2xl xl:text-3xl font-extrabold mt-5 pb-10">Re.Admin</h1>
+        <h1 class="text-2xl xl:text-3xl font-extrabold mt-5 pb-10">{{ APP_TITLE }}</h1>
         <el-form :model="form" :rules="rules" class="w-10/12" ref="formRef">
           <el-form-item prop="username">
             <el-input v-model="form.username" placeholder="请输入登录账号">
@@ -43,6 +43,7 @@ import { LoginForm, userLogin } from "@/api/login";
 import { useRouter } from "vue-router";
 import { useUserStore, UserAuthInfo } from "@/store/userStore"
 
+const APP_TITLE = import.meta.env.VITE_APP_TITLE;
 const userStore = useUserStore();
 const formRef = ref<FormInstance>();
 const form = reactive<LoginForm>({

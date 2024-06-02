@@ -11,4 +11,14 @@
     .el-tag:hover {
         cursor: pointer;
     }
+
+    #dynamicTabContainer {
+        overflow: hidden;
+        position: relative; /* 为平移做准备 */
+    }
+
+    #dynamicTabContent {
+        width: 100%; /* 内容宽度设置为100%，但内容可能会很长 */
+        transition: transform 0.3s ease; /* 平滑过渡效果 */
+    }
 }

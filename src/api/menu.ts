@@ -1,5 +1,5 @@
 import request from "@/request";
-import { ActionLike } from "#/data";
+import { ApplicationResult } from "#/data";
 
 export interface MenuItemMena {
   title: string;
@@ -17,5 +17,5 @@ export interface MenuItem {
 
 // 侧边菜单
 export function getSidebarMenus() {
-  return request.get<any, ActionLike<MenuItem[]>>("/mock/menus");
+  return request.get<any, ApplicationResult<MenuItem[]>>("/mock/menus");
 }

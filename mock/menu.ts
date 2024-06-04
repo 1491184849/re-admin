@@ -6,38 +6,43 @@ const methods: MockMethod[] = [
     method: "get",
     response: () => {
       return {
-        code: 200,
+        code: 10000,
         data: [
           {
             path: "/system",
             meta: {
               title: "系统管理",
               icon: "ant-design:setting-filled",
+              roles: ["admin"],
             },
             children: [
               {
                 path: "/system/user",
-                meta:{
+                meta: {
                   title: "用户管理",
-                }
+                  roles: ["admin"],
+                },
               },
               {
                 path: "/system/roles",
-                meta:{
+                meta: {
                   title: "角色管理",
-                }
+                  roles: ["admin"],
+                },
               },
               {
                 path: "/system/menus",
-                meta:{
+                meta: {
                   title: "菜单管理",
-                }
+                  roles: ["admin"],
+                },
               },
               {
                 path: "/system/dict",
-                meta:{
+                meta: {
                   title: "数据字典",
-                }
+                  roles: ["admin"],
+                },
               },
             ],
           },

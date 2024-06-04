@@ -7,6 +7,7 @@ import "element-plus/dist/index.css";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import loadDirectives from "./directives";
 
 const app = createApp(App);
 app.use(router);
@@ -20,4 +21,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
+//自定义指令
+loadDirectives(app);
 app.mount("#app");

@@ -6,9 +6,12 @@ const methods: MockMethod[] = [
     url: "/mock/login",
     method: "post",
     response: ({ body }) => {
-      if (body.username === "admin" && body.password === "123456") {
+      if (
+        (body.username === "admin" || body.username === "cracker") &&
+        body.password === "123456"
+      ) {
         return {
-          code: 200,
+          code: 10000,
           message: "登录成功",
           data: {
             username: body.username,
@@ -25,6 +28,29 @@ const methods: MockMethod[] = [
         message: "账号或密码错误",
         data: null,
       };
+    },
+  },
+  {
+    url: "/mock/userInfo",
+    method: "get",
+    response: ({ query }) => {
+      if (query.username === "admin") {
+        return {
+          code: 10000,
+          data: {
+            roles: ["admin"],
+            auths: ["test_hello"],
+          },
+        };
+      } else {
+        return {
+          code: 10000,
+          data: {
+            roles: ["common"],
+            auths: [],
+          },
+        };
+      }
     },
   },
 ];

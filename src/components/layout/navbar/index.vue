@@ -13,7 +13,7 @@
         <el-dropdown @command="handleCommand" class="w-full h-full px-2.5 border-none" trigger="click">
           <div class="flex">
             <div class="flex items-center"><img :src="UserAvatar" alt="头像" /></div>
-            <div class="flex items-center ml-2">admin</div>
+            <div class="flex items-center ml-2">{{ userStore.user?.username }}</div>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -48,7 +48,9 @@ import ReIcon from '@/components/re-icon/index.vue'
 import { useRouter } from "vue-router"
 import { onMounted, ref, watch } from "vue";
 import { useTabManager } from "@/hooks/useTabManager";
+import { useUserStore } from "@/store/userStore";
 
+const userStore = useUserStore();
 const tabManager = useTabManager();
 const collapse = ref<boolean>(false);
 const emits = defineEmits(['changeSidebarStatus'])

@@ -20,7 +20,7 @@ const methods: MockMethod[] = [
                 path: "/system/user",
                 meta: {
                   title: "用户管理",
-                  roles: ["admin"],
+                  roles: ["common"],
                 },
               },
               {

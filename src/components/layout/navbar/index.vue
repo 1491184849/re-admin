@@ -49,6 +49,7 @@ import { useRouter } from "vue-router"
 import { onMounted, ref, watch } from "vue";
 import { useTabManager } from "@/hooks/useTabManager";
 import { useUserStore } from "@/store/userStore";
+import { useAuthorization } from "@/hooks/useAuthorization";
 
 const userStore = useUserStore();
 const tabManager = useTabManager();
@@ -56,6 +57,7 @@ const collapse = ref<boolean>(false);
 const emits = defineEmits(['changeSidebarStatus'])
 const screenWidth = ref(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth)
 const router = useRouter();
+const userAuth = useAuthorization();
 // 切换全屏
 const toggleFullScreen = () => {
   if (!document.fullscreenElement) {
@@ -70,6 +72,7 @@ const toggleFullScreen = () => {
 const handleCommand = (cmd: string) => {
   switch (cmd) {
     case "signOut":
+      userAuth.signOut();
       router.replace("/login")
       break;
     case "baseInfo":

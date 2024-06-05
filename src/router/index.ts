@@ -6,6 +6,7 @@ import Person from "@/views/person/index.vue";
 import { MenuItem, getSidebarMenus } from "@/api/menu";
 import { useRouteCache } from "./hook";
 import { HOME_PATH } from "@/consts";
+import { useAuthorization } from "@/hooks/useAuthorization";
 
 // views下页面
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
@@ -13,6 +14,7 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 const routes: RouteRecordRaw[] = [
   {
     path: "/login",
+    name: "Login",
     component: Login,
   },
   {
@@ -52,14 +54,8 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
           {
-            path: "/errors/401",
-            meta: {
-              title: "401(未登录)",
-            },
-            component: () => import("@/views/errors/401.vue"),
-          },
-          {
             path: "/errors/403",
+            name: "err403",
             meta: {
               title: "403(禁止访问)",
             },
@@ -67,6 +63,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: "/errors/500",
+            name: "err500",
             meta: {
               title: "500(服务器错误)",
             },
@@ -101,6 +98,7 @@ const genRoutes = (array: MenuItem[]): RouteRecordRaw[] => {
         title: item?.meta?.title,
         icon: item?.meta?.icon,
         auths: item?.meta?.auths,
+        roles: item?.meta?.roles,
       },
       children: [],
     };
@@ -141,9 +139,20 @@ const router = createRouter({
   routes: await mergeRoutes(),
 });
 
-function getHomeRoute(): RouteRecordRaw {
-  return routes[1][0];
-}
+router.beforeEach((to, _) => {
+  console.log(to);
+  const userAuth = useAuthorization();
+  //未登录或token过期
+  if (!userAuth.isAuthenticated() && to.name !== "Login") {
+    return { name: "Login" };
+  } else if (to.meta?.roles) {
+    const needRoles = to.meta?.roles as string[];
+    //无角色权限
+    if (!userAuth.isInRole(needRoles)) {
+      return { name: "err403" };
+    }
+  }
+  return true;
+});
 
-export { getHomeRoute };
 export default router;

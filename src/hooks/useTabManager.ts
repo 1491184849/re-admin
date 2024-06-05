@@ -6,6 +6,10 @@ export function useTabManager() {
   const coreTabStore = useTabStore();
   const router = useRouter();
 
+  function setActiveWhite(){
+    coreTabStore.setActive("");
+  }
+
   function setActive(v: TabModel) {
     coreTabStore.setActive(v.id);
     router.replace(v.path);
@@ -54,5 +58,6 @@ export function useTabManager() {
     close,
     getDisplayTabs,
     getActiveItem,
+    setActiveWhite
   };
 }

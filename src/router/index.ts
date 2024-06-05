@@ -7,6 +7,7 @@ import { MenuItem, getSidebarMenus } from "@/api/menu";
 import { useRouteCache } from "./hook";
 import { HOME_PATH } from "@/consts";
 import { useAuthorization } from "@/hooks/useAuthorization";
+import { useTabManager } from "@/hooks/useTabManager";
 
 // views下页面
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
@@ -51,6 +52,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: "错误页面",
           icon: "material-symbols:error",
+          hidden: true,
         },
         children: [
           {
@@ -139,9 +141,10 @@ const router = createRouter({
   routes: await mergeRoutes(),
 });
 
+//全局前置路由守卫
 router.beforeEach((to, _) => {
-  console.log(to);
   const userAuth = useAuthorization();
+  const tabManager = useTabManager();
   //未登录或token过期
   if (!userAuth.isAuthenticated() && to.name !== "Login") {
     return { name: "Login" };
@@ -149,7 +152,8 @@ router.beforeEach((to, _) => {
     const needRoles = to.meta?.roles as string[];
     //无角色权限
     if (!userAuth.isInRole(needRoles)) {
-      return { name: "err403" };
+      tabManager.setActiveWhite();
+      return { path: "/errors/403" };
     }
   }
   return true;

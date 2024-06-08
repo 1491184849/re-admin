@@ -21,7 +21,7 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   function (response: AxiosResponse<any, any>) {
-    // 响应正确格式：{code:0,message:''}；格式错误或code非10000都调用Promise.reject()
+    // 响应正确格式：{code:10000,message:''}；格式错误或code非10000都调用Promise.reject()
     if (response.status === 200) {
       // 存在code属性表示格式正确
       const code = response.data["code"] as number | undefined;

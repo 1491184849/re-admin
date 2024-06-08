@@ -24,8 +24,9 @@
       <div class="re-table-toolbar mb-4">
         <slot name="toolbar"></slot>
       </div>
-      <el-table :data="tableData" :header-cell-style="headerCellStyle" :cell-style="props.cellStyle"
-        :border="props.border" @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
+      <el-table v-loading="isLoading" :data="tableData" :header-cell-style="headerCellStyle"
+        :cell-style="props.cellStyle" :border="props.border"
+        @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
         @selection-change="tableSelectionChange">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
           :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
@@ -36,7 +37,7 @@
           :reserve-selection="v.reserveSelection" :filters="v.filters" :filter-placement="v.filterPlacement"
           :filter-class-name="v.filterClassName" :filter-multiple="v.filterMultiple" :filter-method="v.filterMethod"
           :filtered-value="v.filteredValue">
-          <template #default="scope" v-if="v.render">
+          <template #default="scope" v-if="v.render && !isLoading">
             <component :is="v.render(scope.row)"></component>
           </template>
         </el-table-column>
@@ -124,6 +125,7 @@ const tableData = ref<Array<any>>(props.data ?? []);
 const selectedRows = ref<any[]>();
 const selectedRowKeys = ref<any[]>();
 const searchFormRef = ref<FormInstance>();
+const isLoading = ref<boolean>(false);
 //查询
 const onQuery = () => {
   if (props.request) {
@@ -146,26 +148,29 @@ const tableSelectionChange = (newSelection: any[]) => {
 }
 
 //异步请求接口数据
-async function requestData() {
+function requestData() {
   if (props.request) {
-    const res = await props.request(filterForm)
-    tableData.value = res.data;
-    total.value = res.total;
+    isLoading.value = true;
+    props.request(filterForm).then(res => {
+      tableData.value = res.data.rows;
+      total.value = res.data.total;
+      isLoading.value = false;
+    });
   }
 }
 
-async function handleSizeChange(val: number) {
+function handleSizeChange(val: number) {
   filterForm.size = val;
-  await requestData();
+  requestData();
 }
 
-async function handleCurrentChange(val: number) {
+function handleCurrentChange(val: number) {
   filterForm.page = val;
-  await requestData();
+  requestData();
 }
 
 const refresh = async () => {
-  await requestData();
+  requestData();
 }
 
 defineExpose({
@@ -182,7 +187,7 @@ onBeforeMount(() => {
     }
   }
 })
-onMounted(async () => {
-  await requestData();
+onMounted(() => {
+  requestData();
 })
 </script>

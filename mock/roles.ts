@@ -16,7 +16,7 @@ const methods: MockMethod[] = [
   {
     url: "/mock/roles",
     method: "get",
-    response: ({ body }) => {
+    response: ({ query }) => {
       const res = {
         code: 10000,
         data: {
@@ -24,9 +24,9 @@ const methods: MockMethod[] = [
           total: data.length,
         },
       };
-      if (body.page && body.size) {
-        const start = (body.page - 1) * body.size;
-        res.data.rows = res.data.rows.slice(start, start + body.size);
+      if (query.page && query.size) {
+        const start = (query.page - 1) * query.size;
+        res.data.rows = res.data.rows.slice(start, start + query.size);
       }
       return res;
     },

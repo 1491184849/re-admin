@@ -1,7 +1,7 @@
-import { ActionPageLike } from "#/data";
+import { ApplicationResult,PagedResult } from "#/data";
 
 export type CustomRenderFunc = (row: any) => any;
-export type CustomRequestFunc = (para: any) => Promise<ActionPageLike<any>>;
+export type CustomRequestFunc = (para: any) => Promise<ApplicationResult<PagedResult<any>>>;
 
 export interface ReTableColumn {
     type?: "default" | "selection" | "index" | "expand",

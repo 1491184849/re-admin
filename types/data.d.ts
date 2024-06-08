@@ -12,14 +12,10 @@ export enum ApplicationCode {
   FAIL = -1,
 }
 
-// 接口响应类型
-export interface ApplicationResult {
+// 接口响应类型，带data
+export interface ApplicationResult<T> {
   code: ApplicationCode;
   message: string;
-}
-
-// 接口响应类型，带data
-export interface ApplicationResult<T> extends ApplicationResult {
   data: T;
 }
 

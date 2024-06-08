@@ -39,7 +39,7 @@
 import dlbox from "@/assets/img/dlbox.svg";
 import { ElMessage, FormInstance, FormRules } from "element-plus";
 import { reactive, ref } from "vue";
-import { LoginForm, userLogin, getUserInfo, UserInfoData } from "@/api/login";
+import { LoginForm, userLogin } from "@/api/login";
 import { useRouter } from "vue-router";
 import { useUserStore, UserAuthInfo } from "@/store/userStore"
 
@@ -58,10 +58,6 @@ const login = () => {
         userStore.setUser(res.data as UserAuthInfo);
         ElMessage.success(res.message);
         router.replace("/");
-        getUserInfo(form.username).then(infoRes => {
-          const userInfo = infoRes.data as UserInfoData;
-          userStore.setAuthorization(userInfo.roles, userInfo.auths);
-        })
       });
     }
   });

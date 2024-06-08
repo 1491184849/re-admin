@@ -20,6 +20,11 @@ export const useUserStore = defineStore("user", {
       this.roles = roles;
       this.auths = auths;
     },
+    clear() {
+      this.user = null;
+      this.roles = [];
+      this.auths = [];
+    },
   },
 });
 

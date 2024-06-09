@@ -9,6 +9,7 @@ export interface MenuItemMena {
 }
 
 export interface MenuItem {
+  id: string;
   name: string;
   path: string;
   meta: MenuItemMena;
@@ -18,4 +19,9 @@ export interface MenuItem {
 // 侧边菜单
 export function getSidebarMenus() {
   return request.get<any, ApplicationResult<MenuItem[]>>("/mock/menus");
+}
+
+// 菜单列表
+export function getMenuList() {
+  return request.get<any, ApplicationResult<MenuItem[]>>("/mock/menuList");
 }

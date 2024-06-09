@@ -1,6 +1,7 @@
 import { ReTableColumn } from "@/components/re-table/types";
 import { ref } from "vue";
 import { getRoleList } from "@/api/role";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export function useTable() {
   const columns: ReTableColumn[] = [
@@ -40,11 +41,21 @@ export function useTable() {
     {
       type: "text",
       label: "角色名",
-      key: "rolename",
+      key: "role_name",
     },
   ];
   const remove = (row: any) => {
-    console.log(row);
+    ElMessageBox.confirm("删除后无法恢复，是否继续？", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }).then(() => {
+      ElMessage({
+        type: "success",
+        message: "删除成功",
+      });
+      console.log(row);
+    });
   };
   const request = (params: any) => {
     return getRoleList(params);

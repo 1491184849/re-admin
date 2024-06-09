@@ -44,7 +44,6 @@
 <script setup lang="ts">
 import "./index.styl"
 import UserAvatar from "@/assets/img/user.jpeg"
-import ReIcon from '@/components/re-icon/index.vue'
 import { useRouter } from "vue-router"
 import { onMounted, ref, watch } from "vue";
 import { useTabManager } from "@/hooks/useTabManager";

@@ -17,11 +17,15 @@ const methods: MockMethod[] = [
     url: "/mock/roles",
     method: "get",
     response: ({ query }) => {
+      let list = JSON.parse(JSON.stringify(data));
+      if (query.role_name) {
+        list = list.filter((x) => x.role_name.indexOf(query.role_name) !== -1);
+      }
       const res = {
         code: 10000,
         data: {
-          rows: data,
-          total: data.length,
+          rows: list,
+          total: list.length,
         },
       };
       if (query.page && query.size) {

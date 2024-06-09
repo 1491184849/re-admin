@@ -25,8 +25,9 @@
         <slot name="toolbar"></slot>
       </div>
       <el-table v-loading="isLoading" :data="tableData" :header-cell-style="headerCellStyle"
-        :cell-style="props.cellStyle" :border="props.border"
-        @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
+        :cell-style="props.cellStyle" :border="props.border" :default-expand-all="props.defaultExpandAll"
+        :row-key="props.rowKey"
+        :tree-props="props.treeProps" @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
         @selection-change="tableSelectionChange">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
           :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
@@ -58,6 +59,7 @@ import { Icon } from "@iconify/vue";
 import { CSSProperties, onBeforeMount, onMounted, reactive, ref } from "vue";
 import { FormInstance } from "element-plus/es/components/form";
 import { ReTableColumn, FilterStruct, CustomRequestFunc } from './types'
+import { PagedResult } from "#/data";
 
 const headerCellStyle: CSSProperties = { background: '#fafafa', color: '#606266' };
 const props = withDefaults(defineProps<{
@@ -151,9 +153,15 @@ const tableSelectionChange = (newSelection: any[]) => {
 function requestData() {
   if (props.request) {
     isLoading.value = true;
-    props.request(filterForm).then(res => {
-      tableData.value = res.data.rows;
-      total.value = res.data.total;
+    props.request(filterForm).then((res: PagedResult<any> | any) => {
+      if (res.data.total) {
+        tableData.value = res.data.rows;
+        total.value = res.data.total;
+      } else {
+        tableData.value = res.data;
+      }
+      isLoading.value = false;
+    }).catch(() => {
       isLoading.value = false;
     });
   }

@@ -1,5 +1,5 @@
 <template>
-    <Icon v-if="name.indexOf(':') !== -1" :icon="name" />
+    <Icon v-if="name && name.indexOf(':') !== -1" :icon="name" />
     <el-icon v-else>
         <component :is="name" />
     </el-icon>

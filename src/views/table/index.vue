@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { useTable } from "./hook.tsx"
-import ReTable from "@/components/re-table/index.vue"
 import { onMounted, ref } from "vue";
 
 const {

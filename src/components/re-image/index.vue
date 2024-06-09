@@ -1,5 +1,6 @@
 <template>
-    <el-image :style="getStyle()" :src="src" :preview-src-list="previewList" fit="cover" />
+    <el-image v-if="src" :style="getStyle()" :src="src" :preview-src-list="previewList" fit="cover"
+        :preview-teleported="true" />
 </template>
 
 <script setup lang="ts">
@@ -19,3 +20,5 @@ const getStyle = () => {
     return style;
 }
 </script>
+
+<style></style>

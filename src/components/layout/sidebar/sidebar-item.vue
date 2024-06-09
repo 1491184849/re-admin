@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouteRecordRaw } from "vue-router";
-import ReIcon from "@/components/re-icon/index.vue";
 
 defineProps<{ item: RouteRecordRaw }>();
 </script>

@@ -14,8 +14,12 @@ export function useTable() {
       prop: "title",
     },
     {
-      label: "地址",
+      label: "路由",
       prop: "path",
+    },
+    {
+      label: "权限",
+      prop: "permission",
     },
     {
       label: "图标",
@@ -24,6 +28,10 @@ export function useTable() {
           <re-icon name={row.icon} />
         </>
       ),
+    },
+    {
+      label: "排序",
+      prop: "sort",
     },
     {
       fixed: "right",

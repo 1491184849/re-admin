@@ -67,26 +67,32 @@ const methods: MockMethod[] = [
             title: "系统管理",
             icon: "ant-design:setting-filled",
             path: "/system",
+            sort: 1,
             children: [
               {
                 id: "2",
                 title: "用户管理",
                 path: "/system/user",
+                permission: "admin_system_user_list",
+                sort: 1,
               },
               {
                 id: "3",
                 title: "角色管理",
                 path: "/system/roles",
+                sort: 2,
               },
               {
                 id: "4",
                 title: "菜单管理",
                 path: "/system/menus",
+                sort: 3,
               },
               {
                 id: "5",
                 title: "数据字典",
                 path: "/system/dict",
+                sort: 4,
               },
             ],
           },

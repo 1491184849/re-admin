@@ -1,4 +1,10 @@
-import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
+import {
+  RouteRecordRaw,
+  createRouter,
+  createWebHashHistory,
+  createWebHistory,
+  useRouter,
+} from "vue-router";
 import Login from "@/views/login/index.vue";
 import Layout from "@/components/layout/index.vue";
 import Home from "@/views/home/index.vue";
@@ -40,14 +46,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/views/auth/index.vue"),
       },
       {
-        path: "/table",
-        meta: {
-          title: "智能表格",
-          icon: "material-symbols:table-sharp",
-        },
-        component: () => import("@/views/table/index.vue"),
-      },
-      {
         path: "/errors",
         meta: {
           title: "错误页面",
@@ -60,6 +58,14 @@ const routes: RouteRecordRaw[] = [
             name: "err403",
             meta: {
               title: "403(禁止访问)",
+            },
+            component: () => import("@/views/errors/403.vue"),
+          },
+          {
+            path: "/errors/404",
+            name: "err404",
+            meta: {
+              title: "404(页面不存在)",
             },
             component: () => import("@/views/errors/403.vue"),
           },
@@ -137,7 +143,7 @@ const mergeRoutes = async (): Promise<RouteRecordRaw[]> => {
 };
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: await mergeRoutes(),
 });
 
@@ -145,6 +151,7 @@ const router = createRouter({
 router.beforeEach((to, _) => {
   const userAuth = useAuthorization();
   const tabManager = useTabManager();
+
   //未登录或token过期
   if (!userAuth.isAuthenticated() && to.name !== "Login") {
     return { name: "Login" };
@@ -155,6 +162,12 @@ router.beforeEach((to, _) => {
       tabManager.setActiveWhite();
       return { path: "/errors/403" };
     }
+  } else {
+    //const routes = router.getRoutes();
+    // if (!routes[to.path]) {
+    //   // 如果目标路由不存在，可以进行相应处理，例如重定向到404页面
+    //   return { path: "/errors/404" };
+    // }
   }
   return true;
 });

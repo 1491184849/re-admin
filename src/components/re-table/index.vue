@@ -8,8 +8,8 @@
             v-model="filterForm[v.key]" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onQuery">
-            <Icon class="mr-1" icon="material-symbols:search-rounded" />
+          <el-button type="primary" @click="onQuery" :loading="isLoading">
+            <Icon v-if="!isLoading" class="mr-1" icon="material-symbols:search-rounded" />
             查询
           </el-button>
           <el-button @click="onReset">

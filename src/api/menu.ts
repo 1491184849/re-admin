@@ -16,6 +16,15 @@ export interface MenuItem {
   children: MenuItem[];
 }
 
+export interface MenuListItem {
+  id: string;
+  title: string;
+  path: string;
+  permission?: string;
+  sort: number;
+  children: MenuListItem[];
+}
+
 // 侧边菜单
 export function getSidebarMenus() {
   return request.get<any, ApplicationResult<MenuItem[]>>("/mock/menus");
@@ -23,5 +32,5 @@ export function getSidebarMenus() {
 
 // 菜单列表
 export function getMenuList() {
-  return request.get<any, ApplicationResult<MenuItem[]>>("/mock/menuList");
+  return request.get<any, ApplicationResult<MenuListItem[]>>("/mock/menuList");
 }

@@ -2,59 +2,65 @@ import { MockMethod } from "vite-plugin-mock";
 
 const data = [
   {
-    id: 4,
+    id: 1,
     key: "config",
+    value: null,
+    group: null,
     sort: 1,
-    remark: "配置",
-    children: [
-      {
-        id: 1,
-        key: "system_name",
-        value: 1,
-        parentKey: "config",
-        sort: 1,
-        remark: "系统名称",
-      },
-      {
-        id: 2,
-        key: "system_company",
-        value: 0,
-        parentKey: "config",
-        sort: 2,
-        remark: "所属公司",
-      },
-    ],
+    label: "配置",
+    remark: null,
+  },
+  {
+    id: 2,
+    key: "system_name",
+    value: 1,
+    group: "config",
+    sort: 1,
+    label: "系统名称",
+    remark: null,
   },
   {
     id: 3,
-    key: "sex",
+    key: "system_company",
+    value: 0,
+    group: "config",
     sort: 2,
-    remark: "性别",
-    children: [
-      {
-        id: 1,
-        key: "boy",
-        value: 1,
-        parentKey: "sex",
-        sort: 1,
-        remark: "男",
-      },
-      {
-        id: 2,
-        key: "girl",
-        value: 0,
-        parentKey: "sex",
-        sort: 2,
-        remark: "女",
-      },
-    ],
+    label: "所属公司",
+    remark: null,
+  },
+  {
+    id: 4,
+    key: "sex",
+    value: null,
+    group: null,
+    sort: 2,
+    label: "性别",
+    remark: null,
+  },
+  {
+    id: 5,
+    key: "boy",
+    value: 1,
+    group: "sex",
+    sort: 1,
+    label: "男",
+    remark: null,
+  },
+  {
+    id: 6,
+    key: "girl",
+    value: 0,
+    group: "sex",
+    sort: 2,
+    label: "女",
+    remark: null,
   },
 ];
 const methods: MockMethod[] = [
   {
     url: "/mock/dict",
     method: "get",
-    response: ({ body }) => {
+    response: ({ query }) => {
       const res = {
         code: 10000,
         data: {
@@ -62,9 +68,9 @@ const methods: MockMethod[] = [
           total: data.length,
         },
       };
-      if (body.page && body.size) {
-        const start = (body.page - 1) * body.size;
-        res.data.rows = res.data.rows.slice(start, start + body.size);
+      if (query.page && query.size) {
+        const start = (query.page - 1) * query.size;
+        res.data.rows = res.data.rows.slice(start, start + query.size);
       }
       return res;
     },

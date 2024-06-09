@@ -26,13 +26,13 @@
       </div>
       <el-table v-loading="isLoading" :data="tableData" :header-cell-style="headerCellStyle"
         :cell-style="props.cellStyle" :border="props.border" :default-expand-all="props.defaultExpandAll"
-        :row-key="props.rowKey"
-        :tree-props="props.treeProps" @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
+        :row-key="props.rowKey" empty-text="暂无数据" :tree-props="props.treeProps"
+        @row-click="(row: any, col: any, e: Event) => emits('row-click', row, col, e)"
         @selection-change="tableSelectionChange">
         <el-table-column v-for="(v, i) in props.columns" :key="i" :type="v.type" :index="v.index"
           :column-key="v.columnKey" :prop="v.prop" :label="v.label" :width="v.width" :fixed="v.fixed"
           :render-header="v.renderHeader" :sortable="v.sortable" :sort-method="v.sortMethod" :sort-by="v.sortBy"
-          :sort-orders="v.sortOrders" :resizable="v.resizable" :formatter="v.formatter"
+          :sort-orders="v.sortOrders" :resizable="v.resizable" :formatter="v.formatter ?? defaultFormatter"
           :show-overflow-tooltip="v.showOverflowTooltip" :align="v.align" :header-align="v.headerAlign"
           :class-name="v.className" :label-class-name="v.labelClassName" :selectable="v.selectable"
           :reserve-selection="v.reserveSelection" :filters="v.filters" :filter-placement="v.filterPlacement"
@@ -60,8 +60,9 @@ import { CSSProperties, onBeforeMount, onMounted, reactive, ref } from "vue";
 import { FormInstance } from "element-plus/es/components/form";
 import { ReTableColumn, FilterStruct, CustomRequestFunc } from './types'
 import { PagedResult } from "#/data";
+import utils from "@/utils"
 
-const headerCellStyle: CSSProperties = { background: '#fafafa', color: '#606266' };
+const headerCellStyle: CSSProperties = { background: '#fafafa', color: '#334155' };
 const props = withDefaults(defineProps<{
   columns: ReTableColumn[],
   //当request函数存在时，data不生效
@@ -175,6 +176,10 @@ function handleSizeChange(val: number) {
 function handleCurrentChange(val: number) {
   filterForm.page = val;
   requestData();
+}
+
+function defaultFormatter(_1: any, _2: any, cellValue: any) {
+  return utils.formatterNullableContent(cellValue);
 }
 
 const refresh = async () => {
